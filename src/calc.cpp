@@ -6,14 +6,13 @@
 */
 
 #include <iostream>
-//#include <string>
+#include <string>
 
 int main(void) {
-    std::cout << "This is a test";
-    //std::cout << "Start" << std::endl;
-    /*for (std::string line; std::getline(std::cin, line);) {
-        std::cout << line << std::endl;
-    }*/
-    
-    return (2);
+  // std::cout << "Start" << std::endl;
+  for (std::string line; std::getline(std::cin, line);) {
+    std::cout << line << std::endl;
+  }
+
+  return (2);
 }
