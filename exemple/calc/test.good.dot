@@ -1,0 +1,159 @@
+digraph G { page="8.5,11"; size="7.5, 10"
+	"List1" [label="List"]
+	"Expr2" [label="Expr"]
+	"List1" -> "Expr2"
+	"num3" [label="num",style=filled,fillcolor=powderblue]
+	"Expr2" -> "num3"
+	".4" [label=".",style=filled,fillcolor=powderblue]
+	"Expr2" -> ".4"
+	"Expr5" [label="Expr"]
+	"Expr2" -> "Expr5"
+	"num6" [label="num",style=filled,fillcolor=powderblue]
+	"Expr5" -> "num6"
+	".7" [label=".",style=filled,fillcolor=powderblue]
+	"Expr5" -> ".7"
+	"Expr8" [label="Expr"]
+	"Expr5" -> "Expr8"
+	"num9" [label="num",style=filled,fillcolor=powderblue]
+	"Expr8" -> "num9"
+	"+10" [label="+",style=filled,fillcolor=powderblue]
+	"Expr8" -> "+10"
+	"num11" [label="num",style=filled,fillcolor=powderblue]
+	"Expr8" -> "num11"
+	".12" [label=".",style=filled,fillcolor=powderblue]
+	"Expr8" -> ".12"
+	"Expr13" [label="Expr"]
+	"Expr8" -> "Expr13"
+	"num14" [label="num",style=filled,fillcolor=powderblue]
+	"Expr13" -> "num14"
+	"*15" [label="*",style=filled,fillcolor=powderblue]
+	"Expr13" -> "*15"
+	"num16" [label="num",style=filled,fillcolor=powderblue]
+	"Expr13" -> "num16"
+	".17" [label=".",style=filled,fillcolor=powderblue]
+	"Expr13" -> ".17"
+	"Expr18" [label="Expr"]
+	"Expr13" -> "Expr18"
+	"num19" [label="num",style=filled,fillcolor=powderblue]
+	"Expr18" -> "num19"
+	"+20" [label="+",style=filled,fillcolor=powderblue]
+	"Expr18" -> "+20"
+	"(21" [label="(",style=filled,fillcolor=powderblue]
+	"Expr18" -> "(21"
+	"num22" [label="num",style=filled,fillcolor=powderblue]
+	"Expr18" -> "num22"
+	")23" [label=")",style=filled,fillcolor=powderblue]
+	"Expr18" -> ")23"
+	".24" [label=".",style=filled,fillcolor=powderblue]
+	"Expr18" -> ".24"
+	"Expr25" [label="Expr"]
+	"Expr18" -> "Expr25"
+	"num26" [label="num",style=filled,fillcolor=powderblue]
+	"Expr25" -> "num26"
+	"+27" [label="+",style=filled,fillcolor=powderblue]
+	"Expr25" -> "+27"
+	"(28" [label="(",style=filled,fillcolor=powderblue]
+	"Expr25" -> "(28"
+	"num29" [label="num",style=filled,fillcolor=powderblue]
+	"Expr25" -> "num29"
+	"-30" [label="-",style=filled,fillcolor=powderblue]
+	"Expr25" -> "-30"
+	"num31" [label="num",style=filled,fillcolor=powderblue]
+	"Expr25" -> "num31"
+	")32" [label=")",style=filled,fillcolor=powderblue]
+	"Expr25" -> ")32"
+	".33" [label=".",style=filled,fillcolor=powderblue]
+	"Expr25" -> ".33"
+	"Expr34" [label="Expr"]
+	"Expr25" -> "Expr34"
+	"num35" [label="num",style=filled,fillcolor=powderblue]
+	"Expr34" -> "num35"
+	"+36" [label="+",style=filled,fillcolor=powderblue]
+	"Expr34" -> "+36"
+	"num37" [label="num",style=filled,fillcolor=powderblue]
+	"Expr34" -> "num37"
+	"*38" [label="*",style=filled,fillcolor=powderblue]
+	"Expr34" -> "*38"
+	"num39" [label="num",style=filled,fillcolor=powderblue]
+	"Expr34" -> "num39"
+	".40" [label=".",style=filled,fillcolor=powderblue]
+	"Expr34" -> ".40"
+	"Expr41" [label="Expr"]
+	"Expr34" -> "Expr41"
+	"num42" [label="num",style=filled,fillcolor=powderblue]
+	"Expr41" -> "num42"
+	"-43" [label="-",style=filled,fillcolor=powderblue]
+	"Expr41" -> "-43"
+	"num44" [label="num",style=filled,fillcolor=powderblue]
+	"Expr41" -> "num44"
+	"-45" [label="-",style=filled,fillcolor=powderblue]
+	"Expr41" -> "-45"
+	"num46" [label="num",style=filled,fillcolor=powderblue]
+	"Expr41" -> "num46"
+	".47" [label=".",style=filled,fillcolor=powderblue]
+	"Expr41" -> ".47"
+	"Expr48" [label="Expr"]
+	"Expr41" -> "Expr48"
+	"num49" [label="num",style=filled,fillcolor=powderblue]
+	"Expr48" -> "num49"
+	"-50" [label="-",style=filled,fillcolor=powderblue]
+	"Expr48" -> "-50"
+	"(51" [label="(",style=filled,fillcolor=powderblue]
+	"Expr48" -> "(51"
+	"num52" [label="num",style=filled,fillcolor=powderblue]
+	"Expr48" -> "num52"
+	"-53" [label="-",style=filled,fillcolor=powderblue]
+	"Expr48" -> "-53"
+	"num54" [label="num",style=filled,fillcolor=powderblue]
+	"Expr48" -> "num54"
+	")55" [label=")",style=filled,fillcolor=powderblue]
+	"Expr48" -> ")55"
+	".56" [label=".",style=filled,fillcolor=powderblue]
+	"Expr48" -> ".56"
+	"Expr57" [label="Expr"]
+	"Expr48" -> "Expr57"
+	"num58" [label="num",style=filled,fillcolor=powderblue]
+	"Expr57" -> "num58"
+	"-59" [label="-",style=filled,fillcolor=powderblue]
+	"Expr57" -> "-59"
+	"|60" [label="|",style=filled,fillcolor=powderblue]
+	"Expr57" -> "|60"
+	"num61" [label="num",style=filled,fillcolor=powderblue]
+	"Expr57" -> "num61"
+	"-62" [label="-",style=filled,fillcolor=powderblue]
+	"Expr57" -> "-62"
+	"num63" [label="num",style=filled,fillcolor=powderblue]
+	"Expr57" -> "num63"
+	"|64" [label="|",style=filled,fillcolor=powderblue]
+	"Expr57" -> "|64"
+	".65" [label=".",style=filled,fillcolor=powderblue]
+	"Expr57" -> ".65"
+	"Expr66" [label="Expr"]
+	"Expr57" -> "Expr66"
+	"(67" [label="(",style=filled,fillcolor=powderblue]
+	"Expr66" -> "(67"
+	"num68" [label="num",style=filled,fillcolor=powderblue]
+	"Expr66" -> "num68"
+	"-69" [label="-",style=filled,fillcolor=powderblue]
+	"Expr66" -> "-69"
+	"-70" [label="-",style=filled,fillcolor=powderblue]
+	"Expr66" -> "-70"
+	"(71" [label="(",style=filled,fillcolor=powderblue]
+	"Expr66" -> "(71"
+	"num72" [label="num",style=filled,fillcolor=powderblue]
+	"Expr66" -> "num72"
+	"-73" [label="-",style=filled,fillcolor=powderblue]
+	"Expr66" -> "-73"
+	"num74" [label="num",style=filled,fillcolor=powderblue]
+	"Expr66" -> "num74"
+	")75" [label=")",style=filled,fillcolor=powderblue]
+	"Expr66" -> ")75"
+	")76" [label=")",style=filled,fillcolor=powderblue]
+	"Expr66" -> ")76"
+	".77" [label=".",style=filled,fillcolor=powderblue]
+	"Expr66" -> ".77"
+	"Expr78" [label="Expr"]
+	"Expr66" -> "Expr78"
+	"e79" [label="e"]
+	"Expr78" -> "e79"
+}
