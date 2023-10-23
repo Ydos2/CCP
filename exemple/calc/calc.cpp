@@ -148,6 +148,7 @@ private:
 
   // error message and exit if weird character
   void scan_error(char x);
+  void parser_error(char x);
   // error message and exit for mismatch
   void mismatch_error(token_type c);
 
@@ -204,14 +205,20 @@ scanner_t::scanner_t() {
 
   char c;
   string token;
+  bool newList = false;
+  bool newCalc = false;
 
   // ICI TU A LE GET DE TOUTES LES LIGNES AVEC L'ANALYSE DE C QUOI
   // ça sert a remplir "strTokens" qui est l'emsemble des tokens en string
 
   while ((c = getchar()) != EOF) {
+    if (newList == true && (c != '\n' && c != ' '))
+      parser_error(c);
+
     if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' ||
         c == '6' || c == '7' || c == '8' || c == '9') {
       token += c;
+      newCalc = true;
       int endOfNumber = 0;
       while (endOfNumber != 1) {
         c = getchar();
@@ -226,8 +233,17 @@ scanner_t::scanner_t() {
       token.clear();
     }
 
+    //std::cout << c << std::endl;
     if (c == '.' || c == '\n') {
+      if (c == '\n' && newList == false && newCalc == true)
+        parser_error(c);
+      if (c == '.')
+        newList = true;
+      else if (c == '\n')
+        newList = false;
+
       token += c;
+      newCalc = false;
       strTokens.push_back(token);
       token.clear();
     } else if (c != ' ' && c != EOF) {
@@ -295,6 +311,11 @@ int scanner_t::get_line() {
 void scanner_t::scan_error(char x) {
   printf("scan error: unrecognized character '%c'\n", x);
   exit(1);
+}
+
+void scanner_t::parser_error(char x) {
+  printf("syntax error: found '%c' in parsing\n", x);
+  exit(2);
 }
 
 void scanner_t::mismatch_error(token_type x) {
@@ -433,7 +454,9 @@ char *parsetree_t::stuple_to_string(const stuple &s) {
 // all phase during the calculation
 typedef enum {
   P_new,  // 0: end of file
-  P_calc, // 1: numbers
+  P_num, // 1: numbers
+  P_op, // 2: operator
+  P_calc, // 3: calc
 } phase_type;
 
 class parser_t {
@@ -446,11 +469,14 @@ private:
   void List(phase_type phase);
   void ListNew();
   void ListCalc();
+  void ListOperator();
+  void ListNumber();
   // WRITEME: fill this out with the rest of the
   // recursive decent stuff (more methods)
 
   token_type lastToken = T_period;
   int isOpenParen = 0;
+  int isOpenBar = 0;
 
 public:
   void parse();
@@ -504,10 +530,14 @@ void parser_t::List(phase_type phase) {
     ListNew();
     parsetree.pop();
     break;
+  case P_num:
+    ListNumber();
+    break;
+  case P_op:
+    ListOperator();
+    break;
   case P_calc:
-    // parsetree.push(NT_Fact);
     ListCalc();
-    // parsetree.pop();
     break;
   default:
     break;
@@ -523,7 +553,14 @@ void parser_t::ListNew() {
     // number
     eat_token(T_num);
     lastToken = T_num;
-    List(P_calc);
+    List(P_op);
+    break;
+  case T_minus:
+    // - But it's negative value not minus something
+    eat_token(T_minus);
+    lastToken = T_minus;
+    // Take info
+    List(P_num);
     break;
   case T_openparen:
     // (
@@ -538,10 +575,136 @@ void parser_t::ListNew() {
     break;
   case T_period:
     // .
+    if (isOpenBar%2 != 0)
+      syntax_error(NT_List);
+    isOpenBar = 0;
+
     eat_token(T_period);
     lastToken = T_period;
     // parsetree.pop();
     List(P_new);
+    break;
+  case T_bar:
+    // |
+    isOpenBar++;
+    eat_token(T_bar);
+    lastToken = T_bar;
+    List(P_calc);
+    break;
+  default:
+    syntax_error(NT_List);
+    // parsetree.pop();
+    break;
+  }
+}
+
+void parser_t::ListNumber() {
+  switch (scanner.next_token()) {
+  case T_num:
+    // number
+    eat_token(T_num);
+    lastToken = T_num;
+    List(P_op);
+    break;
+  case T_minus:
+    // - But it's negative value not minus something
+    eat_token(T_minus);
+    lastToken = T_minus;
+    // Take info
+    List(P_num);
+    break;
+  case T_openparen:
+    // (
+    eat_token(T_openparen);
+    lastToken = T_openparen;
+    isOpenParen++;
+    List(P_calc);
+    break;
+  case T_closeparen:
+    // )
+    if (isOpenParen <= 0) {
+      syntax_error(NT_List);
+      break;
+    } else if (lastToken == T_openparen) {
+      syntax_error(NT_List);
+      break;
+    }
+    eat_token(T_closeparen);
+    // parsetree.drawepsilon();
+    lastToken = T_closeparen;
+    isOpenParen--;
+    List(P_calc);
+    break;
+  case T_bar:
+    // |
+    isOpenBar++;
+    eat_token(T_bar);
+    lastToken = T_bar;
+    List(P_calc);
+    break;
+  default:
+    syntax_error(NT_List);
+    // parsetree.pop();
+    break;
+  }
+}
+void parser_t::ListOperator() {
+  switch (scanner.next_token()) {
+  case T_plus:
+    // +
+    eat_token(T_plus);
+    lastToken = T_plus;
+    List(P_num);
+    break;
+  case T_minus:
+    // -
+    eat_token(T_minus);
+    lastToken = T_minus;
+    List(P_num);
+    break;
+  case T_times:
+    // *
+    eat_token(T_times);
+    lastToken = T_times;
+    List(P_num);
+    break;
+  case T_period:
+    // .
+    if (isOpenBar%2 != 0)
+      syntax_error(NT_List);
+    isOpenBar = 0;
+
+    eat_token(T_period);
+    lastToken = T_period;
+    // parsetree.pop();
+    List(P_new);
+    break;
+  case T_bar:
+    // |
+    isOpenBar++;
+    eat_token(T_bar);
+    lastToken = T_bar;
+    List(P_calc);
+    break;
+  case T_closeparen:
+    // )
+    if (isOpenParen <= 0) {
+      syntax_error(NT_List);
+      break;
+    } else if (lastToken == T_openparen) {
+      syntax_error(NT_List);
+      break;
+    }
+    eat_token(T_closeparen);
+    // parsetree.drawepsilon();
+    lastToken = T_closeparen;
+    isOpenParen--;
+    List(P_calc);
+    break;
+  case T_eof:
+    // last
+    parsetree.drawepsilon();
+    // parsetree.pop();
     break;
   default:
     syntax_error(NT_List);
@@ -556,38 +719,43 @@ void parser_t::ListCalc() {
     // number
     eat_token(T_num);
     lastToken = T_num;
-    List(P_calc);
+    List(P_op);
     break;
   case T_plus:
     // +
     eat_token(T_plus);
     lastToken = T_plus;
-    List(P_calc);
+    List(P_num);
     break;
   case T_minus:
     // -
     eat_token(T_minus);
     lastToken = T_minus;
-    List(P_calc);
+    List(P_num);
     break;
   case T_times:
     // *
     eat_token(T_times);
     lastToken = T_times;
+    List(P_num);
+    break;
+  case T_bar:
+    // |
+    isOpenBar++;
+    eat_token(T_bar);
+    lastToken = T_bar;
     List(P_calc);
     break;
   case T_period:
     // .
+    if (isOpenBar%2 != 0)
+      syntax_error(NT_List);
+    isOpenBar = 0;
+
     eat_token(T_period);
     lastToken = T_period;
     // parsetree.pop();
     List(P_new);
-    break;
-  case T_bar:
-    // |
-    eat_token(T_bar);
-    lastToken = T_bar;
-    List(P_calc);
     break;
   case T_openparen:
     // (
@@ -599,6 +767,9 @@ void parser_t::ListCalc() {
   case T_closeparen:
     // )
     if (isOpenParen <= 0) {
+      syntax_error(NT_List);
+      break;
+    } else if (lastToken == T_openparen) {
       syntax_error(NT_List);
       break;
     }
