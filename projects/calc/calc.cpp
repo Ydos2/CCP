@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -125,7 +126,7 @@ public:
   token_type next_token();
   void tokenizeString();
   void scanNumber(string num);
-  float getCurrentNum();
+  string getToken();
 
   // return line number for errors
   int get_line();
@@ -161,10 +162,6 @@ private:
   int tokenNbrStr = 0;
 };
 
-////////////////////////////////////////////
-#include <iostream> // CHANGE AFTER DEBUG
-////////////////////////////////////////////
-
 token_type scanner_t::next_token() {
   // WRITEME: replace this bogus junk with code that will take a peek
   // at the next token and return it to the parser.  It should _not_
@@ -177,8 +174,8 @@ token_type scanner_t::next_token() {
   return tokens.at(tokenNbr);
 }
 
-float scanner_t::getCurrentNum() {
-  return atof(strTokens.at(tokenNbrStr).c_str());
+string scanner_t::getToken() {
+  return (strTokens.at(tokenNbrStr - 1).c_str());
 }
 
 void scanner_t::eat_token(token_type c) {
@@ -204,21 +201,18 @@ scanner_t::scanner_t() {
   // WRITEME
 
   char c;
-  string token;
+  string token = "";
   bool newList = false;
   bool newCalc = false;
 
-  // ICI TU A LE GET DE TOUTES LES LIGNES AVEC L'ANALYSE DE C QUOI
-  // ça sert a remplir "strTokens" qui est l'emsemble des tokens en string
-
+  // You get all character per character and you scan if it's not an error
+  // It fill "strTokens" to after change in token
   while ((c = getchar()) != EOF) {
-    if (newList == true && (c != '\n' && c != ' '))
-      parser_error(c);
-
     if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' ||
         c == '6' || c == '7' || c == '8' || c == '9') {
       token += c;
       newCalc = true;
+      newList = false;
       int endOfNumber = 0;
       while (endOfNumber != 1) {
         c = getchar();
@@ -233,7 +227,6 @@ scanner_t::scanner_t() {
       token.clear();
     }
 
-    //std::cout << c << std::endl;
     if (c == '.' || c == '\n') {
       if (c == '\n' && newList == false && newCalc == true)
         parser_error(c);
@@ -246,7 +239,7 @@ scanner_t::scanner_t() {
       newCalc = false;
       strTokens.push_back(token);
       token.clear();
-    } else if (c != ' ' && c != EOF) {
+    } else if (c != ' ' && c != '\t' && c != EOF) {
       if (c == '+' || c == '-' || c == '*' || c == '|' || c == '(' ||
           c == ')') {
         token += c;
@@ -257,13 +250,10 @@ scanner_t::scanner_t() {
     }
   }
 
-  // Ajouter un \n a la ligne
+  // Add the end of file marker
   strTokens.push_back("EOF");
 
-  // Après faux tokeniser la string ( en gros la transformer en token )
-  // Tu prend ton token en string donc tokenisation
-
-  // std::cout << "ça pete la" << strTokens << std::endl;
+  // We need to take the string and transform them in a token
   tokenizeString();
 }
 
@@ -285,13 +275,11 @@ void scanner_t::tokenizeString() {
       tokens.push_back(T_closeparen);
     else if (strTokens.at(i) == "EOF")
       tokens.push_back(T_eof);
-    // its a number or error
     else if (strTokens.at(i) != "\n")
       scanNumber(strTokens.at(i));
   }
 }
 
-#include <math.h>
 void scanner_t::scanNumber(string num) {
   for (int i = 0; i < num.length(); i++) {
     if (num[i] != '0' && num[i] != '1' && num[i] != '2' && num[i] != '3' &&
@@ -454,8 +442,8 @@ char *parsetree_t::stuple_to_string(const stuple &s) {
 // all phase during the calculation
 typedef enum {
   P_new,  // 0: end of file
-  P_num, // 1: numbers
-  P_op, // 2: operator
+  P_num,  // 1: numbers
+  P_op,   // 2: operator
   P_calc, // 3: calc
 } phase_type;
 
@@ -471,13 +459,17 @@ private:
   void ListCalc();
   void ListOperator();
   void ListNumber();
+
+  void OpResult();
+  int CalcFactory(int a, int b, string op);
   // WRITEME: fill this out with the rest of the
   // recursive decent stuff (more methods)
 
-  token_type lastToken = T_period;
+  token_type lastToken = T_bar;
   int isOpenParen = 0;
   int isOpenBar = 0;
 
+  vector<string> actionList;
 public:
   void parse();
 };
@@ -553,12 +545,14 @@ void parser_t::ListNew() {
     // number
     eat_token(T_num);
     lastToken = T_num;
+    actionList.push_back(scanner.getToken());
     List(P_op);
     break;
   case T_minus:
     // - But it's negative value not minus something
     eat_token(T_minus);
     lastToken = T_minus;
+    actionList.push_back(scanner.getToken());
     // Take info
     List(P_num);
     break;
@@ -571,16 +565,26 @@ void parser_t::ListNew() {
     break;
   case T_eof:
     // last
+    if (lastToken == T_bar)
+      syntax_error(NT_List);
     parsetree.drawepsilon();
     break;
   case T_period:
     // .
-    if (isOpenBar%2 != 0)
+    // Bar check
+    if (isOpenParen % 2 != 0)
+      syntax_error(NT_List);
+    isOpenParen = 0;
+    if (isOpenBar % 2 != 0)
       syntax_error(NT_List);
     isOpenBar = 0;
+    ///////////////////////////////////////////////// FIX ?
+    if (lastToken == T_period)
+      syntax_error(NT_List);
 
     eat_token(T_period);
     lastToken = T_period;
+    OpResult();
     // parsetree.pop();
     List(P_new);
     break;
@@ -604,12 +608,14 @@ void parser_t::ListNumber() {
     // number
     eat_token(T_num);
     lastToken = T_num;
+    actionList.push_back(scanner.getToken());
     List(P_op);
     break;
   case T_minus:
     // - But it's negative value not minus something
     eat_token(T_minus);
     lastToken = T_minus;
+    actionList.push_back(scanner.getToken());
     // Take info
     List(P_num);
     break;
@@ -654,29 +660,38 @@ void parser_t::ListOperator() {
     // +
     eat_token(T_plus);
     lastToken = T_plus;
+    actionList.push_back(scanner.getToken());
     List(P_num);
     break;
   case T_minus:
     // -
     eat_token(T_minus);
     lastToken = T_minus;
+    actionList.push_back(scanner.getToken());
     List(P_num);
     break;
   case T_times:
     // *
     eat_token(T_times);
     lastToken = T_times;
+    actionList.push_back(scanner.getToken());
     List(P_num);
     break;
   case T_period:
     // .
-    if (isOpenBar%2 != 0)
+    if (isOpenParen % 2 != 0)
+      syntax_error(NT_List);
+    isOpenParen = 0;
+    if (isOpenBar % 2 != 0)
       syntax_error(NT_List);
     isOpenBar = 0;
+    if (lastToken == T_period)
+      syntax_error(NT_List);
 
     eat_token(T_period);
     lastToken = T_period;
     // parsetree.pop();
+    OpResult();
     List(P_new);
     break;
   case T_bar:
@@ -719,24 +734,28 @@ void parser_t::ListCalc() {
     // number
     eat_token(T_num);
     lastToken = T_num;
+    actionList.push_back(scanner.getToken());
     List(P_op);
     break;
   case T_plus:
     // +
     eat_token(T_plus);
     lastToken = T_plus;
+    actionList.push_back(scanner.getToken());
     List(P_num);
     break;
   case T_minus:
     // -
     eat_token(T_minus);
     lastToken = T_minus;
+    actionList.push_back(scanner.getToken());
     List(P_num);
     break;
   case T_times:
     // *
     eat_token(T_times);
     lastToken = T_times;
+    actionList.push_back(scanner.getToken());
     List(P_num);
     break;
   case T_bar:
@@ -748,12 +767,18 @@ void parser_t::ListCalc() {
     break;
   case T_period:
     // .
-    if (isOpenBar%2 != 0)
+    if (isOpenParen % 2 != 0)
+      syntax_error(NT_List);
+    isOpenParen = 0;
+    if (isOpenBar % 2 != 0)
       syntax_error(NT_List);
     isOpenBar = 0;
+    if (lastToken == T_period)
+      syntax_error(NT_List);
 
     eat_token(T_period);
     lastToken = T_period;
+    OpResult();
     // parsetree.pop();
     List(P_new);
     break;
@@ -789,6 +814,38 @@ void parser_t::ListCalc() {
     // parsetree.pop();
     break;
   }
+}
+
+// Later -> For calculator
+void parser_t::OpResult() {
+  int result = 0;
+
+  int a = 0;
+  int b = 0;
+  string opStr = "";
+
+  if (actionList.size() < 3)
+    return;
+  for (int i = 0; i <= actionList.size(); i++) {
+    if (actionList[i] == "+" || actionList[i] == "-" || actionList[i] == "*") {
+      opStr = actionList[i];
+
+      b = atoi(actionList[i + 1].c_str());
+      result = CalcFactory(a, b, opStr);
+      break;
+    } else
+      a = atoi(actionList[i].c_str());
+  }
+
+  std::cerr << result << std::endl;
+  actionList.clear();
+}
+
+int parser_t::CalcFactory(int a, int b, string opStr) {
+  if (opStr == "+") return (a + b);
+  else if (opStr == "-") return (a - b);
+  else if (opStr == "*") return (a * b);
+  else return (a);
 }
 
 // WRITEME: you will need to put the rest of the procedures here
