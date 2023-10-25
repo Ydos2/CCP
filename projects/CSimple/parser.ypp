@@ -3,9 +3,34 @@
     #include <stdlib.h>
     #define YYDEBUG 1
 
+    // ME ////////////////////////////////
+    #include <iostream>
+    using namespace std;
+
+    extern int yyparse();
+    extern FILE *yyin;
+    extern int line_num;
+    //////////////////////////////////////
+
     int yylex(void);
     void yyerror(const char *);
 %}
+
+%union {
+  int ival;
+  float fval;
+  char *sval;
+}
+
+// define the constant-string tokens:
+%token PROCEDURE VAR INTERGER RETURN
+%token END ENDL
+
+// define the "terminal symbol" token types I'm going to use (in CAPS
+// by convention), and associate each with a field of the union:
+%token <ival> INT
+%token <fval> FLOAT
+%token <sval> STRING
 
 /* Enables verbose error messages */
 %error-verbose
@@ -17,25 +42,47 @@
  */
 
 %%
-
-/** WRITE ME:
- *  This is the language from Project 1. You need to put the productions for
- *  the grammar for the language for this project here.
- */
-
-List    : List Expr '.' {printf("parsed expresion\n");}
-        | Expr '.' {printf("parsed expresion\n");}
-        ;
-
-Expr    : Expr '+' Expr 
-        | Expr '-' Expr 
-        | Expr '*' Expr
-        | 'n'
-        | '-' Expr  
-        | '(' Expr ')'
-        | '|' Expr '|'
-        ;
-
+// the first rule defined is the highest-level rule, which in our
+// case is just the concept of a whole "csimple file":
+start:
+    header {
+        cout << "done with a precedure file!" << endl;
+    }
+    ;
+// CHANGE interger to all other types
+header:
+    PROCEDURE STRING '(' func_param ')' RETURN INTERGER '{' func_body '}' {
+        cout << "reading a procedure function" << endl;
+    }
+    ;
+func_param:
+    STRING {
+        cout << "Param -> " << $1 << endl;
+    }
+    ;
+func_body: expression { printf("STO\n"); }
+    |
+    ;
+expression: operand {
+        cout << "." << endl;
+    }
+    | expression '+' operand  {
+        cout << "+" << endl;
+    }
+    | expression '=' operand  {
+        cout << "=" << endl;
+    }
+    | expression ';' operand {
+        cout << ";" << endl;
+    }
+    | expression ';'  {
+        cout << ";" << endl;
+    }
+    ;
+operand : STRING  
+    | INT
+    | FLOAT
+    ;
 %%
 
 /** You shall not pass!

@@ -7,6 +7,8 @@
     #include "parser.hpp"
 
     void yyerror(const char *);
+
+    int line_num = 1;
 %}
 
 /** WRITE ME:
@@ -25,13 +27,31 @@
 */
 
 %%
+[ \t\n]          ;
 
-[\*\(\)\.\+\-\|]  { return *yytext; }
-[0-9][0-9]*         { return 'n'; }
-[ \t\n]             ; /* skip whitespace */
+procedure        { return PROCEDURE; }
+var           { return VAR; }
+return            { return RETURN; }
 
-.                   yyerror((char *) "invalid character");
+integer            { return INTERGER; }
 
+"("                   { return '('; }
+")"                   { return ')'; }
+"{"                   { return '{'; }
+"}"                   { return '}'; }
+";"                   { return ';'; }
+":"                   { return ':'; }
+","                   { return ','; }
+"="                   { return '='; }
+"+"                   { return '+'; }
+
+[0-9]+\.[0-9]+ { yylval.fval = atof(yytext); return FLOAT; }
+[0-9]+         { yylval.ival = atoi(yytext); return INT; }
+[a-zA-Z0-9]+   {
+  yylval.sval = strdup(yytext);
+  return STRING;
+}
+.              ;
 %%
 
 /** You shall not pass!
