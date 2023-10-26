@@ -1,5 +1,6 @@
 procedure Main(ICI) return integer
 {
+    1 = 3 + 7;
     alpha = beta + gamma;
-    alpha = beta + gamma;
+    true = false + true;
 }

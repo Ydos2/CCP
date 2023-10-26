@@ -17,19 +17,21 @@
 %}
 
 %union {
+  bool bval;
   int ival;
-  float fval;
+  char cval;
   char *sval;
 }
 
 // define the constant-string tokens:
-%token PROCEDURE VAR INTERGER RETURN
-%token END ENDL
+%token PROCEDURE VAR RETURN IF ELSE WHILE _NULL_
+%token INTPTR CHARPTR AND EQUAL EQUALMORE EQUALLESS DIFF OR
 
 // define the "terminal symbol" token types I'm going to use (in CAPS
 // by convention), and associate each with a field of the union:
-%token <ival> INT
-%token <fval> FLOAT
+%token <bval> BOOLEAN
+%token <ival> INTEGER
+%token <cval> CHAR
 %token <sval> STRING
 
 /* Enables verbose error messages */
@@ -51,37 +53,85 @@ start:
     ;
 // CHANGE interger to all other types
 header:
-    PROCEDURE STRING '(' func_param ')' RETURN INTERGER '{' func_body '}' {
+    PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}' {
         cout << "reading a procedure function" << endl;
     }
+    | PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}' header
     ;
-func_param:
-    STRING {
+func_param: {
+        cout << "Param N/A" << endl;
+    }
+    | STRING {
         cout << "Param -> " << $1 << endl;
+    }
+    | STRING ':' types {
+        cout << "Param Decla -> " << $1 << endl;
+    }
+    | STRING ',' STRING ':' types {
+        cout << "Param Decla -> " << $1 << endl;
     }
     ;
 func_body: expression { printf("STO\n"); }
     |
     ;
-expression: operand {
-        cout << "." << endl;
-    }
-    | expression '+' operand  {
-        cout << "+" << endl;
-    }
-    | expression '=' operand  {
-        cout << "=" << endl;
-    }
-    | expression ';' operand {
-        cout << ";" << endl;
-    }
-    | expression ';'  {
-        cout << ";" << endl;
-    }
+expression: types { cout << "types" << endl; }
+    | keywords types  { cout << "keywords" << endl; }
+    | operator types  { cout << "operator" << endl; }
+    | expression types  { cout << "types" << endl; }
+    | expression keywords types  { cout << "keywords" << endl; }
+    | expression keywords '('  { cout << "keywords" << endl; }
+    | expression keywords '{'  { cout << "keywords" << endl; }
+    | expression operator types  { cout << "operator" << endl; }
+    | expression operator '-'  { cout << "operator" << endl; }
+    | expression ':' types  { cout << ":" << endl; }
+    | expression ',' types  { cout << "," << endl; }
+    | expression '|' types  { cout << "|" << endl; }
+    | expression '[' types  { cout << "[" << endl; }
+    | expression ']' types  { cout << "]" << endl; }
+    | expression ']' ';'  { cout << "]" << endl; }
+    | expression ']' operator  { cout << "]" << endl; }
+    | expression '(' types  { cout << "(" << endl; }
+    | expression '(' ')'  { cout << ")" << endl; }
+    | expression ')' types  { cout << ")" << endl; }
+    | expression ')' '{'  { cout << ")" << endl; }
+    | expression ')' ';'  { cout << ")" << endl; }
+    | PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}'  { cout << "OTHER FUNCTION" << endl; }
+    | expression ';' types { cout << ";" << endl; }
+    | expression ';'  { cout << ";" << endl; }
     ;
-operand : STRING  
-    | INT
-    | FLOAT
+
+keywords : IF
+    | ELSE
+    | WHILE
+    | VAR
+    | RETURN
+    | _NULL_
+    ;
+
+types : CHAR
+    | INTEGER
+    | BOOLEAN
+    | STRING
+    | INTPTR
+    | CHARPTR
+    ;
+
+operator : AND
+    | '/'
+    | '='
+    | EQUAL
+    | '>'
+    | EQUALMORE
+    | '<'
+    | EQUALLESS
+    | '-'
+    | '!'
+    | DIFF
+    | OR
+    | '+'
+    | '*'
+    | '&'
+    | '^'
     ;
 %%
 

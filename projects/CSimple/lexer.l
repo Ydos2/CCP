@@ -28,29 +28,63 @@
 
 %%
 [ \t\n]          ;
+[/][%][^%]*[%]+([^%/][^%]*[%]+)*[/]          { /* For commenting */ };
 
-procedure        { return PROCEDURE; }
+boolean            { return BOOLEAN; }
+char            { return CHAR; }
+integer            { return INTEGER; }
+string            { return STRING; }
+intptr            { return INTPTR; }
+charptr            { return CHARPTR; }
+if            { return IF; }
+else            { return ELSE; }
+while            { return WHILE; }
 var           { return VAR; }
+procedure        { return PROCEDURE; }
 return            { return RETURN; }
+null            { return _NULL_; }
 
-integer            { return INTERGER; }
+"&&"                   { return AND; }
+"/"                   { return '/'; }
+"="                   { return '='; }
+"=="                   { return EQUAL; }
+">"                   { return '>'; }
+">="                   { return EQUALMORE; }
+"<"                   { return '<'; }
+"<="                   { return EQUALLESS; }
+"-"                   { return '-'; }
+"!"                   { return '!'; }
+"!="                   { return DIFF; }
+"||"                   { return OR; }
+"+"                   { return '+'; }
+"*"                   { return '*'; }
+"&"                   { return '&'; }
+"^"                   { return '^'; }
 
-"("                   { return '('; }
-")"                   { return ')'; }
-"{"                   { return '{'; }
-"}"                   { return '}'; }
 ";"                   { return ';'; }
 ":"                   { return ':'; }
 ","                   { return ','; }
-"="                   { return '='; }
-"+"                   { return '+'; }
+"|"                   { return '|'; }
+"{"                   { return '{'; }
+"}"                   { return '}'; }
+"("                   { return '('; }
+")"                   { return ')'; }
+"["                   { return '['; }
+"]"                   { return ']'; }
 
-[0-9]+\.[0-9]+ { yylval.fval = atof(yytext); return FLOAT; }
-[0-9]+         { yylval.ival = atoi(yytext); return INT; }
-[a-zA-Z0-9]+   {
-  yylval.sval = strdup(yytext);
-  return STRING;
+
+"true"|"false"         {
+    if (strcmp (yytext,"true")==0)
+        yylval.bval = 1;
+    else
+        yylval.bval = 0;
+    return BOOLEAN;
 }
+[0-9]+         { yylval.ival = atoi(yytext); return INTEGER; }
+[0-9]+         { yylval.ival = atoi(yytext); return INTPTR; }
+[a-zA-Z]         { yylval.cval = yytext[0]; return CHAR; }
+[a-zA-Z]         { yylval.cval = yytext[0]; return CHARPTR; }
+[a-zA-Z]+   { yylval.sval = strdup(yytext); return STRING; }
 .              ;
 %%
 
