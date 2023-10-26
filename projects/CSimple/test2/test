@@ -1,6 +1,6 @@
-procedure Main(ICI) return integer
+procedure Main(i, j, k : integer; l, m, n : boolean) return integer
 {
-    1 = 3 + 7;
-    alpha = beta + gamma;
-    true = false + true;
+    1 = 3 + 7));
+alpha = (b + 1)(eta) + gamma);
+true) )= false) +true;
 }

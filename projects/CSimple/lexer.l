@@ -84,7 +84,7 @@ null            { return _NULL_; }
 [0-9]+         { yylval.ival = atoi(yytext); return INTPTR; }
 [a-zA-Z]         { yylval.cval = yytext[0]; return CHAR; }
 [a-zA-Z]         { yylval.cval = yytext[0]; return CHARPTR; }
-[a-zA-Z]+   { yylval.sval = strdup(yytext); return STRING; }
+[a-zA-Z0-9_]+   { yylval.sval = strdup(yytext); return STRING; }
 .              ;
 %%
 

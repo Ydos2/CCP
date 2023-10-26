@@ -35,7 +35,8 @@
 %token <sval> STRING
 
 /* Enables verbose error messages */
-%error-verbose
+/* %error-verbose WITHOUT WARNING */
+%define parse.error verbose
 
 /** WRITE ME:
  *  - Put all your token definitions here
@@ -53,65 +54,71 @@ start:
     ;
 // CHANGE interger to all other types
 header:
-    PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}' {
-        cout << "reading a procedure function" << endl;
-    }
+    header PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}'
+    | PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}'
+    | PROCEDURE STRING '(' ')' RETURN types '{' func_body '}'
     | PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}' header
     ;
-func_param: {
-        cout << "Param N/A" << endl;
-    }
-    | STRING {
-        cout << "Param -> " << $1 << endl;
-    }
-    | STRING ':' types {
-        cout << "Param Decla -> " << $1 << endl;
-    }
-    | STRING ',' STRING ':' types {
-        cout << "Param Decla -> " << $1 << endl;
-    }
+
+func_param:
+    { cout << "Param N/A" << endl; }
+    | list_func_param ':' types { cout << "Param Decla -> BON" << endl; }
+    | func_param ';' list_func_param ':' types { cout << "Param Decla -> Multiple" << endl;}
     ;
-func_body: expression { printf("STO\n"); }
+list_func_param:
+    list_func_param ',' STRING
+    | list_func_param ',' CHAR
+    | STRING
+    | CHAR
+    ;
+
+func_body: expression {  }
     |
     ;
 expression: types { cout << "types" << endl; }
+    | PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}'  { cout << "OTHER FUNCTION" << endl; }
+
     | keywords types  { cout << "keywords" << endl; }
     | operator types  { cout << "operator" << endl; }
     | expression types  { cout << "types" << endl; }
+
     | expression keywords types  { cout << "keywords" << endl; }
-    | expression keywords '('  { cout << "keywords" << endl; }
-    | expression keywords '{'  { cout << "keywords" << endl; }
+    | expression keywords  { cout << "keywords" << endl; }
+    
     | expression operator types  { cout << "operator" << endl; }
+    | expression operator paranthesis  { cout << "operator" << endl; }
     | expression operator '-'  { cout << "operator" << endl; }
     | expression ':' types  { cout << ":" << endl; }
     | expression ',' types  { cout << "," << endl; }
     | expression '|' types  { cout << "|" << endl; }
-    | expression '[' types  { cout << "[" << endl; }
-    | expression ']' types  { cout << "]" << endl; }
-    | expression ']' ';'  { cout << "]" << endl; }
-    | expression ']' operator  { cout << "]" << endl; }
-    | expression '(' types  { cout << "(" << endl; }
-    | expression '(' ')'  { cout << ")" << endl; }
-    | expression ')' types  { cout << ")" << endl; }
+
+    | expression paranthesis types  { cout << "(" << endl; }
+    | expression paranthesis operator  { cout << "(" << endl; }
+    | expression paranthesis keywords  { cout << "(" << endl; }
+    | expression paranthesis paranthesis  { cout << ")" << endl; }
+    | expression paranthesis '-'  { cout << ")" << endl; }
     | expression ')' '{'  { cout << ")" << endl; }
+    | expression ']' ';'  { cout << "]" << endl; }
     | expression ')' ';'  { cout << ")" << endl; }
-    | PROCEDURE STRING '(' func_param ')' RETURN types '{' func_body '}'  { cout << "OTHER FUNCTION" << endl; }
+
     | expression ';' types { cout << ";" << endl; }
     | expression ';'  { cout << ";" << endl; }
+    | keywords {  }
+    | paranthesis {  }
     ;
 
-keywords : IF
-    | ELSE
-    | WHILE
+keywords : IF '(' expression ')' '{' expression '}'
+    | IF '(' expression ')' '{' expression '}' ELSE '{' expression '}'
+    | WHILE '(' expression ')' '{' expression '}'
     | VAR
     | RETURN
     | _NULL_
     ;
 
-types : CHAR
+types : STRING
     | INTEGER
     | BOOLEAN
-    | STRING
+    | CHAR
     | INTPTR
     | CHARPTR
     ;
@@ -132,6 +139,14 @@ operator : AND
     | '*'
     | '&'
     | '^'
+    ;
+
+paranthesis : '('
+    | '['
+    | ')'
+    | ']'
+    | '{' expression '}'
+    | '{' '}'
     ;
 %%
 
