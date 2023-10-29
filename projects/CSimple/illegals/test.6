@@ -1,0 +1,9 @@
+procedure foo() return integer
+{
+    var x : integer;
+    { 
+        x = 1;
+        var y : integer;  /% must declare all variables before any statement %/
+    }
+    return 0;
+}

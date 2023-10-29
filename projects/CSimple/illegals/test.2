@@ -1,0 +1,12 @@
+/% foo is used before a declaration %/
+procedure Main() return integer
+{
+    var a : integer;
+    a = foo();
+    return 0;
+}
+
+procedure foo() return integer
+{
+    return 0;
+}

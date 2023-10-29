@@ -1,0 +1,10 @@
+var x : booleanptr; /% no such pointer type %/
+x = &(1+3)
+
+var x : char;
+var y : intptr;
+y = &x;             /% address of x is of type charptr %/
+
+var x : charptr;
+var y : char;
+x = &(&y);          /% can only take the address of variable or array element, and (&y) is an expression %/

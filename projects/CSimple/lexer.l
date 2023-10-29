@@ -84,8 +84,10 @@ null            { return _NULL_; }
 [0-9]+         { yylval.ival = atoi(yytext); return INTPTR; }
 [a-zA-Z]         { yylval.cval = yytext[0]; return CHAR; }
 [a-zA-Z]         { yylval.cval = yytext[0]; return CHARPTR; }
-[a-zA-Z0-9_]+   { yylval.sval = strdup(yytext); return STRING; }
-.              ;
+[a-zA-Z]([0-9]|[a-zA-Z]|"_")*   { yylval.sval = strdup(yytext); return STRING; }
+[0-9A-F]         { yylval.ival = atoi(yytext); return INTEGER; }
+[0-7]         { yylval.ival = atoi(yytext); return INTEGER; }
+[01]         { yylval.ival = atoi(yytext); return INTEGER; }
 %%
 
 /** You shall not pass!

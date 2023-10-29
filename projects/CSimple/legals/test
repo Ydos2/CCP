@@ -1,0 +1,69 @@
+procedure Main(i, j, k : integer; l, m, n : boolean) return integer
+{
+    var x : charptr;    /% x is a pointer to a character variable %/
+
+    var x, z : integer;
+var y    : intptr;
+
+x = 5;
+y = &x;     /% We take the address of x and assign it to y.
+                As a result, y points to x, which is 5. %/
+    x = 6;      /% y still points to x, which is 6 now %/
+    z = ^y;     /% Dereference y, and assign to z the value that y points to (which is 6). %/
+    y = null;   /% y is now the NULL pointer %/
+
+
+
+
+
+    var x : charptr;    /% x is a pointer to a char variable %/
+
+    var x : integer;
+var y : intptr;
+x = 5;
+y = &x;
+x = 6;
+
+var x : charptr;
+var y : string[10];
+var z : char;
+y = "foobar";
+x = &y[5];          /% x points to 'r' %/
+    z = ^(x - 5);       /% z is 'f' %/
+    y = "barfoo";       /% z is still 'f', but x now points to 'o' %/
+
+    if (3 > 2)
+{
+    /% ...statements...%/
+    i = 5; /% i has been declared above%/
+}
+
+if (true) { j = 3; }
+else { k = 4; }
+
+while (true) { l = 2; }
+
+3 || 2
+
+(3 + 2) / 3 - 5 * 2
+
+true && false || false
+
+5
+
+0x012
+
+true
+
+- 5
+
+^ x
+
+^ (p + 5)
+
+!false
+
+{ }
+[]
+()
+}

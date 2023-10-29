@@ -1,0 +1,11 @@
+procedure foo() return integer
+{
+    return 0;
+}
+
+/% foo return var was not assign %/
+procedure Main() return integer
+{
+    foo();
+    return 0;
+}
