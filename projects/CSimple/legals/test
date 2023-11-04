@@ -1,5 +1,9 @@
 procedure Main(i, j, k : integer; l, m, n : boolean) return integer
 {
+  p = "this is a string";
+  p = "this is no if newline\n";
+  p = "";
+
     var x : charptr;    /% x is a pointer to a character variable %/
 
     var x, z : integer;

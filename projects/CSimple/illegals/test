@@ -1,5 +1,6 @@
 procedure Main() return integer
 {
+    "this is \"invalid\"";
     z = ^^y;    /% illegal; you can only use a dereference operation once %/
     &x = y;     /% illegal; cannot use the address operator on the left hand side of an assignment %/
 }

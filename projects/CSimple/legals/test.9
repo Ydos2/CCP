@@ -1,0 +1,20 @@
+procedure Main() return integer
+{
+    var x : charptr;    /% x is a pointer to a char variable %/
+
+    var x : integer;
+    var y : intptr;
+    x = 5;
+    y = &x;
+    x = 6;
+
+    var x : charptr;
+    var y : string[10];
+    var z : char;
+    y = "foobar";
+    x = &y[5];          /% x points to 'r' %/
+    z = ^(x - 5);       /% z is 'f' %/
+    y = "barfoo";       /% z is still 'f', but x now points to 'o' %/
+    
+    return a;
+}
