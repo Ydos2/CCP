@@ -1,0 +1,86 @@
+digraph G { page="8.5,11"; size="7.5, 10"; 
+"0" -> "1"
+"1" [label="ProgramImpl"]
+"1" -> "2"
+"2" [label="ProcImpl"]
+"2" -> "3"
+"3" [label="SymName\n\"Main\""]
+"2" -> "4"
+"4" [label="TBoolean"]
+"2" -> "5"
+"5" [label="ProcedureBlockImpl"]
+"5" -> "6"
+"6" [label="DeclImpl"]
+"6" -> "7"
+"7" [label="SymName\n\"z\""]
+"6" -> "8"
+"8" [label="SymName\n\"tr\""]
+"6" -> "9"
+"9" [label="TString"]
+"9" -> "10"
+"10" [label="Primitive\n7"]
+"5" -> "11"
+"11" [label="DeclImpl"]
+"11" -> "12"
+"12" [label="SymName\n\"c\""]
+"11" -> "13"
+"13" [label="TCharacter"]
+"5" -> "14"
+"14" [label="Assignment"]
+"14" -> "15"
+"15" [label="Variable"]
+"15" -> "16"
+"16" [label="SymName\n\"c\""]
+"14" -> "17"
+"17" [label="CharLit"]
+"17" -> "18"
+"18" [label="Primitive\n120"]
+"5" -> "19"
+"19" [label="StringAssignment"]
+"19" -> "20"
+"20" [label="Variable"]
+"20" -> "21"
+"21" [label="SymName\n\"z\""]
+"19" -> "22"
+"22" [label="StringPrimitive\n\"hello world\""]
+"5" -> "23"
+"23" [label="StringAssignment"]
+"23" -> "24"
+"24" [label="Variable"]
+"24" -> "25"
+"25" [label="SymName\n\"tr\""]
+"23" -> "26"
+"26" [label="StringPrimitive\n\"\""]
+"5" -> "27"
+"27" [label="Assignment"]
+"27" -> "28"
+"28" [label="ArrayElement"]
+"28" -> "29"
+"29" [label="SymName\n\"z\""]
+"28" -> "30"
+"30" [label="Minus"]
+"30" -> "31"
+"31" [label="IntLit"]
+"31" -> "32"
+"32" [label="Primitive\n3"]
+"30" -> "33"
+"33" [label="IntLit"]
+"33" -> "34"
+"34" [label="Primitive\n2"]
+"27" -> "35"
+"35" [label="Ident"]
+"35" -> "36"
+"36" [label="SymName\n\"c\""]
+"5" -> "37"
+"37" [label="Return"]
+"37" -> "38"
+"38" [label="Noteq"]
+"38" -> "39"
+"39" [label="CharLit"]
+"39" -> "40"
+"40" [label="Primitive\n100"]
+"38" -> "41"
+"41" [label="CharLit"]
+"41" -> "42"
+"42" [label="Primitive\n99"]
+}
