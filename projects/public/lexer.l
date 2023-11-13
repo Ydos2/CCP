@@ -2,13 +2,15 @@
 %pointer
 
 %{
-    #include <stdlib.h>
-    #include <string.h>
+    #include <cstdlib>
+    #include <cstring>
+    #include "ast.hpp"
     #include "parser.hpp"
 
-    void yyerror(const char *);
+#include <stdio.h>
+#include <string.h>
 
-    int line_num = 1;
+    void yyerror(const char *);
 %}
 
 /** WRITE ME:
@@ -75,20 +77,20 @@ null            { return _NULL_; }
 
 "true"|"false"         {
     if (strcmp (yytext,"true")==0)
-        yylval.bval = 1;
+        yylval.u_base_int = 1;
     else
-        yylval.bval = 0;
+        yylval.u_base_int = 0;
     return BOOLEAN;
 }
-[0-9]+         { yylval.ival = atoi(yytext); return INTEGER; }
-[0-9]+         { yylval.ival = atoi(yytext); return INTPTR; }
-[0-9A-F]         { yylval.ival = atoi(yytext); return INTEGER; }
-[0-7]         { yylval.ival = atoi(yytext); return INTEGER; }
-[01]         { yylval.ival = atoi(yytext); return INTEGER; }
-"'"."'"         { yylval.cval = yytext[1]; return CHAR; }
-"'"."'"         { yylval.cval = yytext[1]; return CHARPTR; }
-"\"".*"\""				{ char temp[yyleng-1]; strncpy(temp,yytext+1,yyleng-1); temp[yyleng-2]='\0'; yylval.sval = strdup(temp); return STRING; }
-[a-zA-Z]([0-9]|[a-zA-Z]|"_")*   { yylval.wval = strdup(yytext); return WORD; }
+[0-9]+         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+[0-9]+         { yylval.u_base_int = atoi(yytext); return INTPTR; }
+[0-9A-F]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+[0-7]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+[01]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+"'"."'"         { yylval.u_base_int = yytext[1]; return CHAR; }
+"'"."'"         { yylval.u_base_int = yytext[1]; return CHARPTR; }
+"\"".*"\""				{ char temp[yyleng-1]; strncpy(temp,yytext+1,yyleng-1); temp[yyleng-2]='\0'; yylval.u_base_charptr = strdup(temp); return STRING; }
+[a-zA-Z]([0-9]|[a-zA-Z]|"_")*   { yylval.u_base_charptr = strdup(yytext); return WORD; }
 %%
 
 /** You shall not pass!

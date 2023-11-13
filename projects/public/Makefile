@@ -5,7 +5,7 @@
 YACC       = bison -d -v
 LEX        = flex
 CC         = gcc
-CPP        = g++ -g -Wno-deprecated --std=c++11
+CPP        = g++ -g -Wno-deprecated --std=c++11 -g3
 GAWK       = gawk
 ASTBUILDER = astbuilder.gawk
 TARGET     = csimple

@@ -1,28 +1,20 @@
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
-    #define YYDEBUG 1
+    #include <cstdio>
+    #include <cstdlib>
 
-    // ME ////////////////////////////////
+    #include "ast.hpp"
+    #include "primitive.hpp"
+    #include "symtab.hpp"
+
     #include <iostream>
     using namespace std;
 
-    extern int yyparse();
-    extern FILE *yyin;
-    extern int line_num;
-    //////////////////////////////////////
+    #define YYDEBUG 1
 
+    extern Program_ptr ast;
     int yylex(void);
     void yyerror(const char *);
 %}
-
-%union {
-  bool bval;
-  int ival;
-  char cval;
-  char *sval;
-  char *wval;
-}
 
 // define the constant-string tokens:
 %token PROCEDURE VAR RETURN IF ELSE WHILE _NULL_
@@ -30,11 +22,11 @@
 
 // define the "terminal symbol" token types I'm going to use (in CAPS
 // by convention), and associate each with a field of the union:
-%token <bval> BOOLEAN
-%token <ival> INTEGER
-%token <cval> CHAR
-%token <sval> STRING
-%token <wval> WORD
+%token BOOLEAN
+%token INTEGER
+%token CHAR
+%token STRING
+%token WORD
 
 /* Enables verbose error messages */
 /* %error-verbose WITHOUT WARNING */
@@ -50,26 +42,29 @@
 // the first rule defined is the highest-level rule, which in our
 // case is just the concept of a whole "csimple file":
 start:
-    header_list {
-        cout << "done with a precedure file!" << endl;
+    header_list { ast = new ProgramImpl($1.u_proc_list); }
+    ;
+
+header_list: header_list header {
+        $1.u_proc_list->push_back($2.u_proc);
+        $$ = $1;
+    }
+    | header {
+        $$.u_proc_list=new std::list<Proc_ptr>();
+        ($$.u_proc_list)->push_back($1.u_proc);
     }
     ;
-// CHANGE interger to all other types
-
-header_list: header_list header
-    | header
-    ;
 header:
-    header PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}'
-    | PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}'
-    | PROCEDURE WORD '(' ')' RETURN types '{' func_body '}'
-    | PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' header
+    header PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' {$$.u_proc=new ProcImpl(new SymName($3.u_base_charptr), $5.u_decl_list, $8.u_type, $10.u_procedure_block);}
+    | PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' {$$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), $4.u_decl_list, $7.u_type, $9.u_procedure_block);}
+    | PROCEDURE WORD '(' ')' RETURN types '{' func_body '}' {$$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), new std::list<Decl_ptr>(), $6.u_type, $8.u_procedure_block);}
+    | PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' header {$$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), $4.u_decl_list, $7.u_type, $9.u_procedure_block);}
     ;
 
 func_param:
-    { cout << "Param N/A" << endl; }
-    | list_func_param ':' types { cout << "Param Decla -> BON" << endl; }
-    | func_param ';' list_func_param ':' types { cout << "Param Decla -> Multiple" << endl;}
+    { $$.u_decl_list=new std::list<Decl_ptr>(); }
+    | list_func_param ':' types { $$.u_decl_list=new std::list<Decl_ptr>(); }
+    | func_param ';' list_func_param ':' types { $$.u_decl_list=new std::list<Decl_ptr>(); }
     ;
 
 list_func_param:
@@ -77,23 +72,34 @@ list_func_param:
     | WORD
     ;
 
-func_body: checks_header get_var checks_list RETURN expression ';' {  }
+func_body: checks_header get_var checks_list RETURN expression ';' {
+        $$.u_procedure_block=new Procedure_blockImpl($1.u_proc_list,$2.u_decl_list,$3.u_stat_list,new Return($5.u_expr));
+    }
     |
     ;
 
 checks_list:
-    | checks_list checks
+    {
+        $$.u_stat_list=new std::list<Stat_ptr>();
+    }
+    | checks_list checks {
+        ($1.u_stat_list)->push_back($2.u_stat);
+        $$=$1;
+    }
     ;
-checks_header:
-    | checks_header header
+checks_header: { $$.u_proc_list=new std::list<Proc_ptr>(); }
+    | checks_header header {
+        ($1.u_proc_list)->push_back($2.u_proc);
+        $$=$1;
+    }
     ;
 
-checks: get_var
+//checks: get_var
+checks:
     | expression_check '=' expression ';'
-    | expression_check '=' types ';'
-    | expression_check '=' types '(' expression_list ')' ';'
-    | types '(' ')' ';'
-    | types '(' expression_list ')' ';'
+    | expression_check '=' STRING ';' { $$.u_stat=new StringAssignment($1.u_lhs,new StringPrimitive($3.u_base_charptr)); }
+    | expression_check '=' WORD '(' expression_list ')' ';'
+    | WORD '(' expression_list ')' ';'
     | keywords
     | paranthesis
     ;
@@ -101,66 +107,70 @@ checks: get_var
 expression_list: expression
     | expression_list ',' expression
 expression:
-    | '-' expression
-    | '^' expression
-    | '!' expression
-    | '&' expression_check
-    | expression operator expression
+    | '-' expression { $$.u_expr=new Uminus($2.u_expr); }
+    | '^' expression { $$.u_expr=new Deref($2.u_expr); } 
+    | '!' expression { $$.u_expr=new Not($2.u_expr); }
+    | '&' expression_check { $$.u_expr=new AddressOf($2.u_lhs); }
+    | operator
     | paranthesis
-    | types '[' expression ']'
-    | types
+    | WORD '[' expression ']' { $$.u_lhs=new ArrayElement(new SymName($1.u_base_charptr),$3.u_expr); }
+    | WORD { $$.u_expr=new Ident(new SymName($1.u_base_charptr)); }
+    | CHAR { $$.u_expr=new CharLit(new Primitive($1.u_base_int)); }
+    | INTEGER { $$.u_expr=new IntLit(new Primitive($1.u_base_int)); }
     | _NULL_
     ;
 
-expression_check: types
-    | types '[' expression ']'
-    | '^' types
+expression_check: WORD { $$.u_lhs=new Variable(new SymName($1.u_base_charptr)); }
+    | WORD '[' expression ']' { $$.u_lhs=new ArrayElement(new SymName($1.u_base_charptr),$3.u_expr); }
+    | '^' WORD { $$.u_lhs=new DerefVariable(new SymName($2.u_base_charptr)); }
     ;
 
 get_var:
+    {
+        $$.u_decl_list=new std::list<Decl_ptr>();
+    }
     | get_var VAR list_func_param ':' types ';'
     {
-        cout << "Var declaration" << endl;
+        $$.u_decl_list=new std::list<Decl_ptr>();
     }
     | get_var VAR list_func_param ':' STRING '[' INTEGER ']' ';'
     {
-        cout << "Var STRING[INTEGER]" << endl;
+        $$.u_decl_list=new std::list<Decl_ptr>();
     }
     ;
 
-keywords : IF '(' expression ')' '{' checks '}'
-    | IF '(' expression ')' '{' checks '}' ELSE '{' checks '}'
-    | WHILE '(' expression ')' '{' checks '}'
+keywords : IF '(' expression ')' '{' checks '}' { $$.u_stat=new IfNoElse($3.u_expr,$6.u_nested_block); }
+    | IF '(' expression ')' '{' checks '}' ELSE '{' checks '}' { $$.u_stat=new IfWithElse($3.u_expr,$6.u_nested_block,$10.u_nested_block); }
+    | WHILE '(' expression ')' '{' checks '}' { $$.u_stat=new WhileLoop($3.u_expr,$6.u_nested_block); }
     ;
 
-types : STRING
-    | INTEGER
-    | BOOLEAN
-    | CHAR
-    | INTPTR
-    | CHARPTR
-    | WORD
+types : STRING {$$.u_type=new TString(new Primitive($1.u_base_int));}
+    | INTEGER {$$.u_type=new TInteger();}
+    | BOOLEAN {$$.u_type=new TBoolean();}
+    | CHAR {$$.u_type=new TCharacter();}
+    | INTPTR {$$.u_type=new TIntPtr();}
+    | CHARPTR {$$.u_type=new TCharPtr();}
     ;
 
-operator : AND
-    | '/'
-    | '='
-    | EQUAL
-    | '>'
-    | EQUALMORE
-    | '<'
-    | EQUALLESS
-    | DIFF
-    | OR
-    | '-'
-    | '+'
-    | '*'
+operator : expression AND expression { $$.u_expr=new And($1.u_expr,$3.u_expr); }
+    | expression '/' expression { $$.u_expr=new Div($1.u_expr,$3.u_expr); }
+    | expression '=' expression { $$.u_stat=new Assignment($1.u_lhs,$3.u_expr); }
+    | expression EQUAL expression { $$.u_expr=new Compare($1.u_expr,$3.u_expr); }
+    | expression '>' expression { $$.u_expr=new Gt($1.u_expr,$3.u_expr); }
+    | expression EQUALMORE expression { $$.u_expr=new Gteq($1.u_expr,$3.u_expr); }
+    | expression '<' expression { $$.u_expr=new Lt($1.u_expr,$3.u_expr); }
+    | expression EQUALLESS expression { $$.u_expr=new Lteq($1.u_expr,$3.u_expr); }
+    | expression DIFF expression { $$.u_expr=new Noteq($1.u_expr,$3.u_expr); }
+    | expression OR expression { $$.u_expr=new Or($1.u_expr,$3.u_expr); }
+    | expression '-' expression { $$.u_expr=new Minus($1.u_expr,$3.u_expr); }
+    | expression '+' expression { $$.u_expr=new Plus($1.u_expr,$3.u_expr); }
+    | expression '*' expression { $$.u_expr=new Times($1.u_expr,$3.u_expr); }
     ;
 
 paranthesis : '{' checks_list '}'
-    | '|' expression '|'
-    | '[' expression ']'
-    | '(' expression ')'
+    | '|' expression '|' { $$.u_expr=new AbsoluteValue($2.u_expr); }
+    | WORD '[' expression ']' { $$.u_expr=new ArrayAccess(new SymName($1.u_base_charptr),$3.u_expr); }
+    | '(' expression ')' { $$.u_expr=$2.u_expr; }
     | '{' '}'
     ;
 %%
@@ -174,5 +184,5 @@ extern int yylineno;
 void yyerror(const char *s)
 {
     fprintf(stderr, "%s at line %d\n", s, yylineno);
-    exit(1);
+    return;
 }
