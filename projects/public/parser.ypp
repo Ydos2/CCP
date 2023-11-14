@@ -28,6 +28,10 @@
 %token STRING
 %token WORD
 
+%left EQUAL DIFF OR EQUALLESS EQUALMORE AND '>' '<'
+%left '+' '-'
+%left '*' '/'
+
 /* Enables verbose error messages */
 /* %error-verbose WITHOUT WARNING */
 %define parse.error verbose
@@ -37,6 +41,12 @@
  *  - Put all your type definitions here
  *  - Put all your precedence/associativity rules here
  */
+
+/////////////////////////////
+// LISTE A FAIRE :
+// TESTS1
+// ordre de prio sur le + * dans le test3
+/////////////////////////////
 
 %%
 // the first rule defined is the highest-level rule, which in our
@@ -53,22 +63,24 @@ header_list: header_list header {
     }
     | header {
         $$.u_proc_list=new std::list<Proc_ptr>();
-        ($$.u_proc_list)->push_back($1.u_proc);
+        $$.u_proc_list->push_back($1.u_proc);
     }
     ;
-// Get the type of header
-header:
-    header PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' {$$.u_proc=new ProcImpl(new SymName($3.u_base_charptr), $5.u_decl_list, $8.u_type, $10.u_procedure_block);}
-    | PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' {$$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), $4.u_decl_list, $7.u_type, $9.u_procedure_block);}
-    | PROCEDURE WORD '(' ')' RETURN types '{' func_body '}' {$$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), new std::list<Decl_ptr>(), $6.u_type, $8.u_procedure_block);}
-    | PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' header {$$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), $4.u_decl_list, $7.u_type, $9.u_procedure_block);}
+// Declaration of the type of header
+header: PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' { $$.u_proc=new ProcImpl(new SymName($2.u_base_charptr), $4.u_decl_list, $7.u_type, $9.u_procedure_block); }
     ;
 
 // Get all param inside header
 func_param:
     { $$.u_decl_list=new std::list<Decl_ptr>(); }
-    | list_func_param ':' types { $$.u_decl_list=new std::list<Decl_ptr>(); }
-    | func_param ';' list_func_param ':' types { $$.u_decl_list=new std::list<Decl_ptr>(); }
+    | list_func_param ':' types {
+        $$.u_decl_list=new std::list<Decl_ptr>();
+        ($$.u_decl_list)->push_back(new DeclImpl($1.u_symname_list,$3.u_type));
+    }
+    | func_param ';' list_func_param ':' types {
+        ($1.u_decl_list)->push_back(new DeclImpl($3.u_symname_list,$5.u_type));
+        $$=$1;
+    }
     ;
 
 // Look if it just one or more arguments
@@ -107,18 +119,27 @@ checks_header: { $$.u_proc_list=new std::list<Proc_ptr>(); }
     ;
 
 //checks: get_var -- It's LHS
-checks:
-    | expression_check '=' expression ';' { $$.u_stat=new Assignment($1.u_lhs,$3.u_expr); }
+// Open new function if call
+checks: expression_check '=' expression ';' { $$.u_stat=new Assignment($1.u_lhs,$3.u_expr); }
     | expression_check '=' STRING ';' { $$.u_stat=new StringAssignment($1.u_lhs,new StringPrimitive($3.u_base_charptr)); }
     | expression_check '=' WORD '(' expression_list ')' ';' { $$.u_stat=new Call($1.u_lhs,new SymName($3.u_base_charptr),$5.u_expr_list); }
-    | WORD '(' expression_list ')' ';'
+    | WORD '(' expression_list ')' ';' { $$.u_stat=new Call($1.u_lhs,new SymName($3.u_base_charptr),$5.u_expr_list); }
     | keywords
-    | paranthesis
+    | '{' nested_list '}' { $$.u_stat=new CodeBlock($2.u_nested_block); }
     ;
 
+// Inside braket with expression or nothing in the function
+nested_list: get_var checks_list {
+        $$.u_nested_block=new Nested_blockImpl($1.u_decl_list,$2.u_stat_list);
+    };
+
 // Get all expression and chek it
-expression_list: expression
-    | expression_list ',' expression
+expression_list: { $$.u_expr_list=new std::list<Expr_ptr>(); }
+    | expression {
+        $$.u_expr_list=new std::list<Expr_ptr>();
+        ($$.u_expr_list)->push_back($1.u_expr);
+    }
+    | expression_list ',' expression { ($$.u_expr_list)->push_back($3.u_expr); }
 expression:
     | '-' expression { $$.u_expr=new Uminus($2.u_expr); }
     | '^' expression { $$.u_expr=new Deref($2.u_expr); } 
@@ -153,9 +174,9 @@ get_var: { $$.u_decl_list=new std::list<Decl_ptr>(); }
     ;
 
 // All action keywords
-keywords : IF '(' expression ')' '{' checks '}' { $$.u_stat=new IfNoElse($3.u_expr,$6.u_nested_block); }
-    | IF '(' expression ')' '{' checks '}' ELSE '{' checks '}' { $$.u_stat=new IfWithElse($3.u_expr,$6.u_nested_block,$10.u_nested_block); }
-    | WHILE '(' expression ')' '{' checks '}' { $$.u_stat=new WhileLoop($3.u_expr,$6.u_nested_block); }
+keywords : IF '(' expression ')' '{' nested_list '}' { $$.u_stat=new IfNoElse($3.u_expr,$6.u_nested_block); }
+    | IF '(' expression ')' '{' nested_list '}' ELSE '{' nested_list '}' { $$.u_stat=new IfWithElse($3.u_expr,$6.u_nested_block,$10.u_nested_block); }
+    | WHILE '(' expression ')' '{' nested_list '}' { $$.u_stat=new WhileLoop($3.u_expr,$6.u_nested_block); }
     ;
 
 // Initialise the types
@@ -184,11 +205,8 @@ operator : expression AND expression { $$.u_expr=new And($1.u_expr,$3.u_expr); }
     ;
 
 // Parenthesis check -- WORK IN PROGRESS
-paranthesis : '{' checks_list '}'
-    | '|' expression '|' { $$.u_expr=new AbsoluteValue($2.u_expr); }
-    | WORD '[' expression ']' { $$.u_expr=new ArrayAccess(new SymName($1.u_base_charptr),$3.u_expr); }
+paranthesis : '|' expression '|' { $$.u_expr=new AbsoluteValue($2.u_expr); }
     | '(' expression ')' { $$.u_expr=$2.u_expr; }
-    | '{' '}'
     ;
 %%
 
