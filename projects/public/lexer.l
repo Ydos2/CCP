@@ -82,11 +82,14 @@ null            { return _NULL_; }
         yylval.u_base_int = 0;
     return BOOLEAN;
 }
-[0-9]+         { yylval.u_base_int = atoi(yytext); return INTEGER; }
-[0-9]+         { yylval.u_base_int = atoi(yytext); return INTPTR; }
-[0-9A-F]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
-[0-7]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
-[01]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+[1-9][0-9]*         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+[0]         { yylval.u_base_int = atoi(yytext); return INTEGER; }
+[0][x|X][0-9A-F]* { yylval.u_base_int = strtol(yytext,NULL, 16); return INTEGER; }
+[0][0-7]+ { yylval.u_base_int = strtol(yytext,NULL, 8); return INTEGER; }
+[0-1]+[b] { yylval.u_base_int = strtol(yytext,NULL, 2); return INTEGER; }
+
+[1-9][0-9]*         { yylval.u_base_int = atoi(yytext); return INTPTR; }
+
 "'"."'"         { yylval.u_base_int = yytext[1]; return CHAR; }
 "'"."'"         { yylval.u_base_int = yytext[1]; return CHARPTR; }
 "\"".*"\""				{ char temp[yyleng-1]; strncpy(temp,yytext+1,yyleng-1); temp[yyleng-2]='\0'; yylval.u_base_charptr = strdup(temp); return STRING; }

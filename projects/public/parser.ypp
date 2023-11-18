@@ -28,7 +28,14 @@
 %token STRING
 %token WORD
 
-%left EQUAL DIFF OR EQUALLESS EQUALMORE AND '>' '<'
+// Order of the sign
+%right '='
+%left AND OR
+%left '^'
+%left '&'
+%left EQUAL DIFF
+%left '!'
+%left EQUALLESS EQUALMORE '>' '<'
 %left '+' '-'
 %left '*' '/'
 
@@ -41,12 +48,6 @@
  *  - Put all your type definitions here
  *  - Put all your precedence/associativity rules here
  */
-
-/////////////////////////////
-// LISTE A FAIRE :
-// TESTS1
-// ordre de prio sur le + * dans le test3
-/////////////////////////////
 
 %%
 // the first rule defined is the highest-level rule, which in our

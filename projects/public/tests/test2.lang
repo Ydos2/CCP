@@ -3,6 +3,19 @@ procedure Main(x : integer; y : char) return boolean
 	var z,tr: string[7];
 	var c: char;
 
+	var a, b: integer;
+	a = 100;
+	a = 0x01F;
+	a = 07234;
+	a = 0111b;
+
+	if (c == 's') {
+
+	}
+	while (c == 'S') {
+
+	}
+
 	c = 'x';
 	z = "hello world";
 	tr = "";

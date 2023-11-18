@@ -1,13 +1,22 @@
 procedure Main(i, j, k : integer; l, m, n : boolean) return integer
 {
-  p = "this is a string";
-  p = "this is no if newline\n";
-  p = "";
-
     var x : charptr;    /% x is a pointer to a character variable %/
 
     var x, z : integer;
 var y    : intptr;
+
+
+
+
+    var x : charptr;    /% x is a pointer to a char variable %/
+
+    var x : integer;
+var y : intptr;
+var y : string[10];
+var z : char;
+x = 5;
+y = &x;
+x = 6;
 
 x = 5;
 y = &x;     /% We take the address of x and assign it to y.
@@ -17,20 +26,6 @@ y = &x;     /% We take the address of x and assign it to y.
     y = null;   /% y is now the NULL pointer %/
 
 
-
-
-
-    var x : charptr;    /% x is a pointer to a char variable %/
-
-    var x : integer;
-var y : intptr;
-x = 5;
-y = &x;
-x = 6;
-
-var x : charptr;
-var y : string[10];
-var z : char;
 y = "foobar";
 x = &y[5];          /% x points to 'r' %/
     z = ^(x - 5);       /% z is 'f' %/
@@ -42,30 +37,26 @@ x = &y[5];          /% x points to 'r' %/
     i = 5; /% i has been declared above%/
 }
 
-if (true) { j = 3; }
+if (3 || 2) { j = 3; }
 else { k = 4; }
 
 while (true) { l = 2; }
 
-3 || 2
 
-(3 + 2) / 3 - 5 * 2
 
-true && false || false
+x = (3 + 2) / 3 - 5 * 2;
 
-5
+y = true && false || false;
 
-0x012
+x=0x012;
 
-true
+- 5;
 
-- 5
+^ x;
 
-^ x
+^ (p + 5);
 
-^ (p + 5)
-
-!false
+!false;
 
 { }
 []
