@@ -1,24 +1,20 @@
-procedure Main(x : integer; y : char) return boolean
+procedure Main() return char
 {
 	var z,tr: string[7];
 	var c: char;
-
+	var d: boolean;
 	var a, b: integer;
+
 	a = 100;
 	a = 0x01F;
 	a = 07234;
 	a = 0111b;
 
-	if (c == 's') {
-
-	}
-	while (c == 'S') {
-
+	if (a == b) {
+		c = 'b';
 	}
 
 	c = 'x';
-	z = "hello world";
-	tr = "";
 	z[3-2] = c;	
-	return 'd' != 'c';
+	return 'a';
 }
