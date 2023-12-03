@@ -27,7 +27,6 @@ procedure Main() return integer
     }
     a = foo(3); 
     c = null;
-    a = true + 2;
     {
 	var b: integer;
 	b = 3*a+2;
