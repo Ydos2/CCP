@@ -1,0 +1,23 @@
+.data
+
+.text
+
+.globl Main
+
+Main:
+push %ebp
+mov %esp, %ebp
+push $2
+pop %ebx
+pop %eax
+imul %ebx, %eax
+push %eax
+pop %eax
+leave
+ret
+push %ebp
+mov %esp, %ebp
+push $0
+pop %eax
+leave
+ret

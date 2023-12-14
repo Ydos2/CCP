@@ -1,0 +1,13 @@
+procedure Main() return integer
+{
+    var d, i : integer;
+
+    d = 4;
+    i = 0;
+
+    if (d == 4) {
+        i = 8 * 3;
+    }
+
+    return 8;
+}

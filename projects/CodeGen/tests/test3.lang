@@ -31,5 +31,5 @@ procedure Main() return integer
 	var b: integer;
 	b = 3*a+2;
     }
-    return 0;
+    return a;
 }

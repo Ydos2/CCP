@@ -1,0 +1,21 @@
+procedure foo(x: integer) return integer
+{
+    if (x == 0) {
+        x = 45;
+    }
+
+    return x*2;
+}
+
+
+procedure Main() return integer
+{
+    var d, i : integer;
+
+    d = 4;
+    i = 0;
+
+    i = foo(i);
+
+    return i;
+}

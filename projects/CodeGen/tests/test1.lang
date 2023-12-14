@@ -41,10 +41,10 @@ procedure f(ax: integer) return boolean
     procedure nested() return boolean
     {
         var i,a: integer;
-	return j-a == 12;
+	    return false;
     }
     var d: boolean;
-    return -(---k+j*k/x);
+    return true;
 }
 
 procedure main(ax: integer) return boolean
