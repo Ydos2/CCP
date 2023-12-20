@@ -1,0 +1,2478 @@
+State 38 conflicts: 1 shift/reduce
+State 53 conflicts: 2 shift/reduce
+State 55 conflicts: 2 shift/reduce
+State 56 conflicts: 2 shift/reduce
+State 57 conflicts: 1 shift/reduce
+State 58 conflicts: 2 shift/reduce
+State 62 conflicts: 1 shift/reduce
+State 63 conflicts: 1 shift/reduce
+State 64 conflicts: 1 shift/reduce, 2 reduce/reduce
+State 65 conflicts: 1 shift/reduce
+State 69 conflicts: 1 shift/reduce
+State 72 conflicts: 1 shift/reduce
+State 80 conflicts: 2 shift/reduce
+State 81 conflicts: 2 shift/reduce
+State 82 conflicts: 2 shift/reduce
+State 83 conflicts: 2 shift/reduce
+State 84 conflicts: 2 shift/reduce
+State 85 conflicts: 2 shift/reduce
+State 86 conflicts: 2 shift/reduce
+State 87 conflicts: 2 shift/reduce
+State 88 conflicts: 2 shift/reduce
+State 89 conflicts: 2 shift/reduce
+State 90 conflicts: 2 shift/reduce
+State 91 conflicts: 2 shift/reduce
+State 92 conflicts: 2 shift/reduce
+State 125 conflicts: 1 shift/reduce
+State 128 conflicts: 1 shift/reduce, 2 reduce/reduce
+
+
+Grammar
+
+    0 $accept: start $end
+
+    1 start: header_list
+
+    2 header_list: header_list header
+    3            | header
+
+    4 header: PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}'
+
+    5 func_param: ε
+    6           | list_func_param ':' types
+    7           | func_param ';' list_func_param ':' types
+
+    8 list_func_param: list_func_param ',' WORD
+    9                | WORD
+
+   10 func_body: checks_header get_var checks_list RETURN expression ';'
+   11          | ε
+
+   12 checks_list: ε
+   13            | checks_list checks
+
+   14 checks_header: ε
+   15              | checks_header header
+
+   16 checks: expression_check '=' expression ';'
+   17       | expression_check '=' STRING ';'
+   18       | expression_check '=' WORD '(' expression_list ')' ';'
+   19       | WORD '(' expression_list ')' ';'
+   20       | keywords
+   21       | '{' nested_list '}'
+
+   22 nested_list: get_var checks_list
+
+   23 expression_list: ε
+   24                | expression
+   25                | expression_list ',' expression
+
+   26 expression: ε
+   27           | '-' expression
+   28           | '^' expression
+   29           | '!' expression
+   30           | '&' expression_check
+   31           | paranthesis
+   32           | operator
+   33           | WORD '[' expression ']'
+   34           | WORD
+   35           | CHAR
+   36           | BOOLEAN
+   37           | INTEGER
+   38           | _NULL_
+
+   39 expression_check: WORD
+   40                 | WORD '[' expression ']'
+   41                 | '^' WORD
+
+   42 get_var: ε
+   43        | get_var VAR list_func_param ':' types ';'
+   44        | get_var VAR list_func_param ':' STRING '[' INTEGER ']' ';'
+
+   45 keywords: IF '(' expression ')' '{' nested_list '}'
+   46         | IF '(' expression ')' '{' nested_list '}' ELSE '{' nested_list '}'
+   47         | WHILE '(' expression ')' '{' nested_list '}'
+
+   48 types: STRING
+   49      | INTEGER
+   50      | BOOLEAN
+   51      | CHAR
+   52      | INTPTR
+   53      | CHARPTR
+
+   54 operator: expression AND expression
+   55         | expression '/' expression
+   56         | expression '=' expression
+   57         | expression EQUAL expression
+   58         | expression '>' expression
+   59         | expression EQUALMORE expression
+   60         | expression '<' expression
+   61         | expression EQUALLESS expression
+   62         | expression DIFF expression
+   63         | expression OR expression
+   64         | expression '-' expression
+   65         | expression '+' expression
+   66         | expression '*' expression
+
+   67 paranthesis: '|' expression '|'
+   68            | '(' expression ')'
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '!' (33) 29
+    '&' (38) 30
+    '(' (40) 4 18 19 45 46 47 68
+    ')' (41) 4 18 19 45 46 47 68
+    '*' (42) 66
+    '+' (43) 65
+    ',' (44) 8 25
+    '-' (45) 27 64
+    '/' (47) 55
+    ':' (58) 6 7 43 44
+    ';' (59) 7 10 16 17 18 19 43 44
+    '<' (60) 60
+    '=' (61) 16 17 18 56
+    '>' (62) 58
+    '[' (91) 33 40 44
+    ']' (93) 33 40 44
+    '^' (94) 28 41
+    '{' (123) 4 21 45 46 47
+    '|' (124) 67
+    '}' (125) 4 21 45 46 47
+    error (256)
+    PROCEDURE (258) 4
+    VAR (259) 43 44
+    RETURN (260) 4 10
+    IF (261) 45 46
+    ELSE (262) 46
+    WHILE (263) 47
+    _NULL_ (264) 38
+    INTPTR (265) 52
+    CHARPTR (266) 53
+    AND (267) 54
+    EQUAL (268) 57
+    EQUALMORE (269) 59
+    EQUALLESS (270) 61
+    DIFF (271) 62
+    OR (272) 63
+    BOOLEAN (273) 36 50
+    INTEGER (274) 37 44 49
+    CHAR (275) 35 51
+    STRING (276) 17 44 48
+    WORD (277) 4 8 9 18 19 33 34 39 40 41
+
+
+Nonterminals, with rules where they appear
+
+    $accept (43)
+        on left: 0
+    start (44)
+        on left: 1
+        on right: 0
+    header_list (45)
+        on left: 2 3
+        on right: 1 2
+    header (46)
+        on left: 4
+        on right: 2 3 15
+    func_param (47)
+        on left: 5 6 7
+        on right: 4 7
+    list_func_param (48)
+        on left: 8 9
+        on right: 6 7 8 43 44
+    func_body (49)
+        on left: 10 11
+        on right: 4
+    checks_list (50)
+        on left: 12 13
+        on right: 10 13 22
+    checks_header (51)
+        on left: 14 15
+        on right: 10 15
+    checks (52)
+        on left: 16 17 18 19 20 21
+        on right: 13
+    nested_list (53)
+        on left: 22
+        on right: 21 45 46 47
+    expression_list (54)
+        on left: 23 24 25
+        on right: 18 19 25
+    expression (55)
+        on left: 26 27 28 29 30 31 32 33 34 35 36 37 38
+        on right: 10 16 24 25 27 28 29 33 40 45 46 47 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68
+    expression_check (56)
+        on left: 39 40 41
+        on right: 16 17 18 30
+    get_var (57)
+        on left: 42 43 44
+        on right: 10 22 43 44
+    keywords (58)
+        on left: 45 46 47
+        on right: 20
+    types (59)
+        on left: 48 49 50 51 52 53
+        on right: 4 6 7 43
+    operator (60)
+        on left: 54 55 56 57 58 59 60 61 62 63 64 65 66
+        on right: 32
+    paranthesis (61)
+        on left: 67 68
+        on right: 31
+
+
+State 0
+
+    0 $accept: • start $end
+
+    PROCEDURE  shift, and go to state 1
+
+    start        go to state 2
+    header_list  go to state 3
+    header       go to state 4
+
+
+State 1
+
+    4 header: PROCEDURE • WORD '(' func_param ')' RETURN types '{' func_body '}'
+
+    WORD  shift, and go to state 5
+
+
+State 2
+
+    0 $accept: start • $end
+
+    $end  shift, and go to state 6
+
+
+State 3
+
+    1 start: header_list •
+    2 header_list: header_list • header
+
+    PROCEDURE  shift, and go to state 1
+
+    $default  reduce using rule 1 (start)
+
+    header  go to state 7
+
+
+State 4
+
+    3 header_list: header •
+
+    $default  reduce using rule 3 (header_list)
+
+
+State 5
+
+    4 header: PROCEDURE WORD • '(' func_param ')' RETURN types '{' func_body '}'
+
+    '('  shift, and go to state 8
+
+
+State 6
+
+    0 $accept: start $end •
+
+    $default  accept
+
+
+State 7
+
+    2 header_list: header_list header •
+
+    $default  reduce using rule 2 (header_list)
+
+
+State 8
+
+    4 header: PROCEDURE WORD '(' • func_param ')' RETURN types '{' func_body '}'
+
+    WORD  shift, and go to state 9
+
+    $default  reduce using rule 5 (func_param)
+
+    func_param       go to state 10
+    list_func_param  go to state 11
+
+
+State 9
+
+    9 list_func_param: WORD •
+
+    $default  reduce using rule 9 (list_func_param)
+
+
+State 10
+
+    4 header: PROCEDURE WORD '(' func_param • ')' RETURN types '{' func_body '}'
+    7 func_param: func_param • ';' list_func_param ':' types
+
+    ')'  shift, and go to state 12
+    ';'  shift, and go to state 13
+
+
+State 11
+
+    6 func_param: list_func_param • ':' types
+    8 list_func_param: list_func_param • ',' WORD
+
+    ':'  shift, and go to state 14
+    ','  shift, and go to state 15
+
+
+State 12
+
+    4 header: PROCEDURE WORD '(' func_param ')' • RETURN types '{' func_body '}'
+
+    RETURN  shift, and go to state 16
+
+
+State 13
+
+    7 func_param: func_param ';' • list_func_param ':' types
+
+    WORD  shift, and go to state 9
+
+    list_func_param  go to state 17
+
+
+State 14
+
+    6 func_param: list_func_param ':' • types
+
+    INTPTR   shift, and go to state 18
+    CHARPTR  shift, and go to state 19
+    BOOLEAN  shift, and go to state 20
+    INTEGER  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    STRING   shift, and go to state 23
+
+    types  go to state 24
+
+
+State 15
+
+    8 list_func_param: list_func_param ',' • WORD
+
+    WORD  shift, and go to state 25
+
+
+State 16
+
+    4 header: PROCEDURE WORD '(' func_param ')' RETURN • types '{' func_body '}'
+
+    INTPTR   shift, and go to state 18
+    CHARPTR  shift, and go to state 19
+    BOOLEAN  shift, and go to state 20
+    INTEGER  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    STRING   shift, and go to state 23
+
+    types  go to state 26
+
+
+State 17
+
+    7 func_param: func_param ';' list_func_param • ':' types
+    8 list_func_param: list_func_param • ',' WORD
+
+    ':'  shift, and go to state 27
+    ','  shift, and go to state 15
+
+
+State 18
+
+   52 types: INTPTR •
+
+    $default  reduce using rule 52 (types)
+
+
+State 19
+
+   53 types: CHARPTR •
+
+    $default  reduce using rule 53 (types)
+
+
+State 20
+
+   50 types: BOOLEAN •
+
+    $default  reduce using rule 50 (types)
+
+
+State 21
+
+   49 types: INTEGER •
+
+    $default  reduce using rule 49 (types)
+
+
+State 22
+
+   51 types: CHAR •
+
+    $default  reduce using rule 51 (types)
+
+
+State 23
+
+   48 types: STRING •
+
+    $default  reduce using rule 48 (types)
+
+
+State 24
+
+    6 func_param: list_func_param ':' types •
+
+    $default  reduce using rule 6 (func_param)
+
+
+State 25
+
+    8 list_func_param: list_func_param ',' WORD •
+
+    $default  reduce using rule 8 (list_func_param)
+
+
+State 26
+
+    4 header: PROCEDURE WORD '(' func_param ')' RETURN types • '{' func_body '}'
+
+    '{'  shift, and go to state 28
+
+
+State 27
+
+    7 func_param: func_param ';' list_func_param ':' • types
+
+    INTPTR   shift, and go to state 18
+    CHARPTR  shift, and go to state 19
+    BOOLEAN  shift, and go to state 20
+    INTEGER  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    STRING   shift, and go to state 23
+
+    types  go to state 29
+
+
+State 28
+
+    4 header: PROCEDURE WORD '(' func_param ')' RETURN types '{' • func_body '}'
+
+    '}'       reduce using rule 11 (func_body)
+    $default  reduce using rule 14 (checks_header)
+
+    func_body      go to state 30
+    checks_header  go to state 31
+
+
+State 29
+
+    7 func_param: func_param ';' list_func_param ':' types •
+
+    $default  reduce using rule 7 (func_param)
+
+
+State 30
+
+    4 header: PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body • '}'
+
+    '}'  shift, and go to state 32
+
+
+State 31
+
+   10 func_body: checks_header • get_var checks_list RETURN expression ';'
+   15 checks_header: checks_header • header
+
+    PROCEDURE  shift, and go to state 1
+
+    $default  reduce using rule 42 (get_var)
+
+    header   go to state 33
+    get_var  go to state 34
+
+
+State 32
+
+    4 header: PROCEDURE WORD '(' func_param ')' RETURN types '{' func_body '}' •
+
+    $default  reduce using rule 4 (header)
+
+
+State 33
+
+   15 checks_header: checks_header header •
+
+    $default  reduce using rule 15 (checks_header)
+
+
+State 34
+
+   10 func_body: checks_header get_var • checks_list RETURN expression ';'
+   43 get_var: get_var • VAR list_func_param ':' types ';'
+   44        | get_var • VAR list_func_param ':' STRING '[' INTEGER ']' ';'
+
+    VAR  shift, and go to state 35
+
+    $default  reduce using rule 12 (checks_list)
+
+    checks_list  go to state 36
+
+
+State 35
+
+   43 get_var: get_var VAR • list_func_param ':' types ';'
+   44        | get_var VAR • list_func_param ':' STRING '[' INTEGER ']' ';'
+
+    WORD  shift, and go to state 9
+
+    list_func_param  go to state 37
+
+
+State 36
+
+   10 func_body: checks_header get_var checks_list • RETURN expression ';'
+   13 checks_list: checks_list • checks
+
+    RETURN  shift, and go to state 38
+    IF      shift, and go to state 39
+    WHILE   shift, and go to state 40
+    WORD    shift, and go to state 41
+    '^'     shift, and go to state 42
+    '{'     shift, and go to state 43
+
+    checks            go to state 44
+    expression_check  go to state 45
+    keywords          go to state 46
+
+
+State 37
+
+    8 list_func_param: list_func_param • ',' WORD
+   43 get_var: get_var VAR list_func_param • ':' types ';'
+   44        | get_var VAR list_func_param • ':' STRING '[' INTEGER ']' ';'
+
+    ':'  shift, and go to state 47
+    ','  shift, and go to state 15
+
+
+State 38
+
+   10 func_body: checks_header get_var checks_list RETURN • expression ';'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 59
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 39
+
+   45 keywords: IF • '(' expression ')' '{' nested_list '}'
+   46         | IF • '(' expression ')' '{' nested_list '}' ELSE '{' nested_list '}'
+
+    '('  shift, and go to state 62
+
+
+State 40
+
+   47 keywords: WHILE • '(' expression ')' '{' nested_list '}'
+
+    '('  shift, and go to state 63
+
+
+State 41
+
+   19 checks: WORD • '(' expression_list ')' ';'
+   39 expression_check: WORD •
+   40                 | WORD • '[' expression ']'
+
+    '('  shift, and go to state 64
+    '['  shift, and go to state 65
+
+    $default  reduce using rule 39 (expression_check)
+
+
+State 42
+
+   41 expression_check: '^' • WORD
+
+    WORD  shift, and go to state 66
+
+
+State 43
+
+   21 checks: '{' • nested_list '}'
+
+    $default  reduce using rule 42 (get_var)
+
+    nested_list  go to state 67
+    get_var      go to state 68
+
+
+State 44
+
+   13 checks_list: checks_list checks •
+
+    $default  reduce using rule 13 (checks_list)
+
+
+State 45
+
+   16 checks: expression_check • '=' expression ';'
+   17       | expression_check • '=' STRING ';'
+   18       | expression_check • '=' WORD '(' expression_list ')' ';'
+
+    '='  shift, and go to state 69
+
+
+State 46
+
+   20 checks: keywords •
+
+    $default  reduce using rule 20 (checks)
+
+
+State 47
+
+   43 get_var: get_var VAR list_func_param ':' • types ';'
+   44        | get_var VAR list_func_param ':' • STRING '[' INTEGER ']' ';'
+
+    INTPTR   shift, and go to state 18
+    CHARPTR  shift, and go to state 19
+    BOOLEAN  shift, and go to state 20
+    INTEGER  shift, and go to state 21
+    CHAR     shift, and go to state 22
+    STRING   shift, and go to state 70
+
+    types  go to state 71
+
+
+State 48
+
+   38 expression: _NULL_ •
+
+    $default  reduce using rule 38 (expression)
+
+
+State 49
+
+   36 expression: BOOLEAN •
+
+    $default  reduce using rule 36 (expression)
+
+
+State 50
+
+   37 expression: INTEGER •
+
+    $default  reduce using rule 37 (expression)
+
+
+State 51
+
+   35 expression: CHAR •
+
+    $default  reduce using rule 35 (expression)
+
+
+State 52
+
+   33 expression: WORD • '[' expression ']'
+   34           | WORD •
+
+    '['  shift, and go to state 72
+
+    $default  reduce using rule 34 (expression)
+
+
+State 53
+
+   28 expression: '^' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 73
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 54
+
+   30 expression: '&' • expression_check
+
+    WORD  shift, and go to state 74
+    '^'   shift, and go to state 42
+
+    expression_check  go to state 75
+
+
+State 55
+
+   29 expression: '!' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 76
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 56
+
+   27 expression: '-' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 77
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 57
+
+   68 paranthesis: '(' • expression ')'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 78
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 58
+
+   67 paranthesis: '|' • expression '|'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 79
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 59
+
+   10 func_body: checks_header get_var checks_list RETURN expression • ';'
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ';'        shift, and go to state 93
+
+
+State 60
+
+   32 expression: operator •
+
+    $default  reduce using rule 32 (expression)
+
+
+State 61
+
+   31 expression: paranthesis •
+
+    $default  reduce using rule 31 (expression)
+
+
+State 62
+
+   45 keywords: IF '(' • expression ')' '{' nested_list '}'
+   46         | IF '(' • expression ')' '{' nested_list '}' ELSE '{' nested_list '}'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 94
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 63
+
+   47 keywords: WHILE '(' • expression ')' '{' nested_list '}'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 95
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 64
+
+   19 checks: WORD '(' • expression_list ')' ';'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    ')'       reduce using rule 23 (expression_list)
+    ')'       [reduce using rule 26 (expression)]
+    ','       reduce using rule 23 (expression_list)
+    ','       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression_list  go to state 96
+    expression       go to state 97
+    operator         go to state 60
+    paranthesis      go to state 61
+
+
+State 65
+
+   40 expression_check: WORD '[' • expression ']'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 98
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 66
+
+   41 expression_check: '^' WORD •
+
+    $default  reduce using rule 41 (expression_check)
+
+
+State 67
+
+   21 checks: '{' nested_list • '}'
+
+    '}'  shift, and go to state 99
+
+
+State 68
+
+   22 nested_list: get_var • checks_list
+   43 get_var: get_var • VAR list_func_param ':' types ';'
+   44        | get_var • VAR list_func_param ':' STRING '[' INTEGER ']' ';'
+
+    VAR  shift, and go to state 35
+
+    $default  reduce using rule 12 (checks_list)
+
+    checks_list  go to state 100
+
+
+State 69
+
+   16 checks: expression_check '=' • expression ';'
+   17       | expression_check '=' • STRING ';'
+   18       | expression_check '=' • WORD '(' expression_list ')' ';'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    STRING   shift, and go to state 101
+    WORD     shift, and go to state 102
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 103
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 70
+
+   44 get_var: get_var VAR list_func_param ':' STRING • '[' INTEGER ']' ';'
+   48 types: STRING •
+
+    '['  shift, and go to state 104
+
+    $default  reduce using rule 48 (types)
+
+
+State 71
+
+   43 get_var: get_var VAR list_func_param ':' types • ';'
+
+    ';'  shift, and go to state 105
+
+
+State 72
+
+   33 expression: WORD '[' • expression ']'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 106
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 73
+
+   28 expression: '^' expression •
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 28 (expression)
+
+
+State 74
+
+   39 expression_check: WORD •
+   40                 | WORD • '[' expression ']'
+
+    '['  shift, and go to state 65
+
+    $default  reduce using rule 39 (expression_check)
+
+
+State 75
+
+   30 expression: '&' expression_check •
+
+    $default  reduce using rule 30 (expression)
+
+
+State 76
+
+   29 expression: '!' expression •
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 29 (expression)
+
+
+State 77
+
+   27 expression: '-' expression •
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 27 (expression)
+
+
+State 78
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+   68 paranthesis: '(' expression • ')'
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ')'        shift, and go to state 107
+
+
+State 79
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+   67 paranthesis: '|' expression • '|'
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    '|'        shift, and go to state 108
+
+
+State 80
+
+   54 operator: expression AND • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 109
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 81
+
+   57 operator: expression EQUAL • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 110
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 82
+
+   59 operator: expression EQUALMORE • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 111
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 83
+
+   61 operator: expression EQUALLESS • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 112
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 84
+
+   62 operator: expression DIFF • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 113
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 85
+
+   63 operator: expression OR • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 114
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 86
+
+   56 operator: expression '=' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 115
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 87
+
+   58 operator: expression '>' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 116
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 88
+
+   60 operator: expression '<' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 117
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 89
+
+   65 operator: expression '+' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 118
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 90
+
+   64 operator: expression '-' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 119
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 91
+
+   66 operator: expression '*' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 120
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 92
+
+   55 operator: expression '/' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    '|'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 121
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 93
+
+   10 func_body: checks_header get_var checks_list RETURN expression ';' •
+
+    $default  reduce using rule 10 (func_body)
+
+
+State 94
+
+   45 keywords: IF '(' expression • ')' '{' nested_list '}'
+   46         | IF '(' expression • ')' '{' nested_list '}' ELSE '{' nested_list '}'
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ')'        shift, and go to state 122
+
+
+State 95
+
+   47 keywords: WHILE '(' expression • ')' '{' nested_list '}'
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ')'        shift, and go to state 123
+
+
+State 96
+
+   19 checks: WORD '(' expression_list • ')' ';'
+   25 expression_list: expression_list • ',' expression
+
+    ')'  shift, and go to state 124
+    ','  shift, and go to state 125
+
+
+State 97
+
+   24 expression_list: expression •
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 24 (expression_list)
+
+
+State 98
+
+   40 expression_check: WORD '[' expression • ']'
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ']'        shift, and go to state 126
+
+
+State 99
+
+   21 checks: '{' nested_list '}' •
+
+    $default  reduce using rule 21 (checks)
+
+
+State 100
+
+   13 checks_list: checks_list • checks
+   22 nested_list: get_var checks_list •
+
+    IF     shift, and go to state 39
+    WHILE  shift, and go to state 40
+    WORD   shift, and go to state 41
+    '^'    shift, and go to state 42
+    '{'    shift, and go to state 43
+
+    $default  reduce using rule 22 (nested_list)
+
+    checks            go to state 44
+    expression_check  go to state 45
+    keywords          go to state 46
+
+
+State 101
+
+   17 checks: expression_check '=' STRING • ';'
+
+    ';'  shift, and go to state 127
+
+
+State 102
+
+   18 checks: expression_check '=' WORD • '(' expression_list ')' ';'
+   33 expression: WORD • '[' expression ']'
+   34           | WORD •
+
+    '('  shift, and go to state 128
+    '['  shift, and go to state 72
+
+    $default  reduce using rule 34 (expression)
+
+
+State 103
+
+   16 checks: expression_check '=' expression • ';'
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ';'        shift, and go to state 129
+
+
+State 104
+
+   44 get_var: get_var VAR list_func_param ':' STRING '[' • INTEGER ']' ';'
+
+    INTEGER  shift, and go to state 130
+
+
+State 105
+
+   43 get_var: get_var VAR list_func_param ':' types ';' •
+
+    $default  reduce using rule 43 (get_var)
+
+
+State 106
+
+   33 expression: WORD '[' expression • ']'
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+    ']'        shift, and go to state 131
+
+
+State 107
+
+   68 paranthesis: '(' expression ')' •
+
+    $default  reduce using rule 68 (paranthesis)
+
+
+State 108
+
+   67 paranthesis: '|' expression '|' •
+
+    $default  reduce using rule 67 (paranthesis)
+
+
+State 109
+
+   54 operator: expression • AND expression
+   54         | expression AND expression •
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 54 (operator)
+
+
+State 110
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   57         | expression EQUAL expression •
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 57 (operator)
+
+
+State 111
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   59         | expression EQUALMORE expression •
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    '+'  shift, and go to state 89
+    '-'  shift, and go to state 90
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 59 (operator)
+
+
+State 112
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   61         | expression EQUALLESS expression •
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    '+'  shift, and go to state 89
+    '-'  shift, and go to state 90
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 61 (operator)
+
+
+State 113
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   62         | expression DIFF expression •
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 62 (operator)
+
+
+State 114
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   63         | expression OR expression •
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 63 (operator)
+
+
+State 115
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   56         | expression '=' expression •
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 56 (operator)
+
+
+State 116
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   58         | expression '>' expression •
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    '+'  shift, and go to state 89
+    '-'  shift, and go to state 90
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 58 (operator)
+
+
+State 117
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   60         | expression '<' expression •
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    '+'  shift, and go to state 89
+    '-'  shift, and go to state 90
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 60 (operator)
+
+
+State 118
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   65         | expression '+' expression •
+   66         | expression • '*' expression
+
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 65 (operator)
+
+
+State 119
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   64         | expression '-' expression •
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    '*'  shift, and go to state 91
+    '/'  shift, and go to state 92
+
+    $default  reduce using rule 64 (operator)
+
+
+State 120
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+   66         | expression '*' expression •
+
+    $default  reduce using rule 66 (operator)
+
+
+State 121
+
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   55         | expression '/' expression •
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    $default  reduce using rule 55 (operator)
+
+
+State 122
+
+   45 keywords: IF '(' expression ')' • '{' nested_list '}'
+   46         | IF '(' expression ')' • '{' nested_list '}' ELSE '{' nested_list '}'
+
+    '{'  shift, and go to state 132
+
+
+State 123
+
+   47 keywords: WHILE '(' expression ')' • '{' nested_list '}'
+
+    '{'  shift, and go to state 133
+
+
+State 124
+
+   19 checks: WORD '(' expression_list ')' • ';'
+
+    ';'  shift, and go to state 134
+
+
+State 125
+
+   25 expression_list: expression_list ',' • expression
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression   go to state 135
+    operator     go to state 60
+    paranthesis  go to state 61
+
+
+State 126
+
+   40 expression_check: WORD '[' expression ']' •
+
+    $default  reduce using rule 40 (expression_check)
+
+
+State 127
+
+   17 checks: expression_check '=' STRING ';' •
+
+    $default  reduce using rule 17 (checks)
+
+
+State 128
+
+   18 checks: expression_check '=' WORD '(' • expression_list ')' ';'
+
+    _NULL_   shift, and go to state 48
+    BOOLEAN  shift, and go to state 49
+    INTEGER  shift, and go to state 50
+    CHAR     shift, and go to state 51
+    WORD     shift, and go to state 52
+    '^'      shift, and go to state 53
+    '&'      shift, and go to state 54
+    '!'      shift, and go to state 55
+    '-'      shift, and go to state 56
+    '('      shift, and go to state 57
+    '|'      shift, and go to state 58
+
+    '-'       [reduce using rule 26 (expression)]
+    ')'       reduce using rule 23 (expression_list)
+    ')'       [reduce using rule 26 (expression)]
+    ','       reduce using rule 23 (expression_list)
+    ','       [reduce using rule 26 (expression)]
+    $default  reduce using rule 26 (expression)
+
+    expression_list  go to state 136
+    expression       go to state 97
+    operator         go to state 60
+    paranthesis      go to state 61
+
+
+State 129
+
+   16 checks: expression_check '=' expression ';' •
+
+    $default  reduce using rule 16 (checks)
+
+
+State 130
+
+   44 get_var: get_var VAR list_func_param ':' STRING '[' INTEGER • ']' ';'
+
+    ']'  shift, and go to state 137
+
+
+State 131
+
+   33 expression: WORD '[' expression ']' •
+
+    $default  reduce using rule 33 (expression)
+
+
+State 132
+
+   45 keywords: IF '(' expression ')' '{' • nested_list '}'
+   46         | IF '(' expression ')' '{' • nested_list '}' ELSE '{' nested_list '}'
+
+    $default  reduce using rule 42 (get_var)
+
+    nested_list  go to state 138
+    get_var      go to state 68
+
+
+State 133
+
+   47 keywords: WHILE '(' expression ')' '{' • nested_list '}'
+
+    $default  reduce using rule 42 (get_var)
+
+    nested_list  go to state 139
+    get_var      go to state 68
+
+
+State 134
+
+   19 checks: WORD '(' expression_list ')' ';' •
+
+    $default  reduce using rule 19 (checks)
+
+
+State 135
+
+   25 expression_list: expression_list ',' expression •
+   54 operator: expression • AND expression
+   55         | expression • '/' expression
+   56         | expression • '=' expression
+   57         | expression • EQUAL expression
+   58         | expression • '>' expression
+   59         | expression • EQUALMORE expression
+   60         | expression • '<' expression
+   61         | expression • EQUALLESS expression
+   62         | expression • DIFF expression
+   63         | expression • OR expression
+   64         | expression • '-' expression
+   65         | expression • '+' expression
+   66         | expression • '*' expression
+
+    AND        shift, and go to state 80
+    EQUAL      shift, and go to state 81
+    EQUALMORE  shift, and go to state 82
+    EQUALLESS  shift, and go to state 83
+    DIFF       shift, and go to state 84
+    OR         shift, and go to state 85
+    '='        shift, and go to state 86
+    '>'        shift, and go to state 87
+    '<'        shift, and go to state 88
+    '+'        shift, and go to state 89
+    '-'        shift, and go to state 90
+    '*'        shift, and go to state 91
+    '/'        shift, and go to state 92
+
+    $default  reduce using rule 25 (expression_list)
+
+
+State 136
+
+   18 checks: expression_check '=' WORD '(' expression_list • ')' ';'
+   25 expression_list: expression_list • ',' expression
+
+    ')'  shift, and go to state 140
+    ','  shift, and go to state 125
+
+
+State 137
+
+   44 get_var: get_var VAR list_func_param ':' STRING '[' INTEGER ']' • ';'
+
+    ';'  shift, and go to state 141
+
+
+State 138
+
+   45 keywords: IF '(' expression ')' '{' nested_list • '}'
+   46         | IF '(' expression ')' '{' nested_list • '}' ELSE '{' nested_list '}'
+
+    '}'  shift, and go to state 142
+
+
+State 139
+
+   47 keywords: WHILE '(' expression ')' '{' nested_list • '}'
+
+    '}'  shift, and go to state 143
+
+
+State 140
+
+   18 checks: expression_check '=' WORD '(' expression_list ')' • ';'
+
+    ';'  shift, and go to state 144
+
+
+State 141
+
+   44 get_var: get_var VAR list_func_param ':' STRING '[' INTEGER ']' ';' •
+
+    $default  reduce using rule 44 (get_var)
+
+
+State 142
+
+   45 keywords: IF '(' expression ')' '{' nested_list '}' •
+   46         | IF '(' expression ')' '{' nested_list '}' • ELSE '{' nested_list '}'
+
+    ELSE  shift, and go to state 145
+
+    $default  reduce using rule 45 (keywords)
+
+
+State 143
+
+   47 keywords: WHILE '(' expression ')' '{' nested_list '}' •
+
+    $default  reduce using rule 47 (keywords)
+
+
+State 144
+
+   18 checks: expression_check '=' WORD '(' expression_list ')' ';' •
+
+    $default  reduce using rule 18 (checks)
+
+
+State 145
+
+   46 keywords: IF '(' expression ')' '{' nested_list '}' ELSE • '{' nested_list '}'
+
+    '{'  shift, and go to state 146
+
+
+State 146
+
+   46 keywords: IF '(' expression ')' '{' nested_list '}' ELSE '{' • nested_list '}'
+
+    $default  reduce using rule 42 (get_var)
+
+    nested_list  go to state 147
+    get_var      go to state 68
+
+
+State 147
+
+   46 keywords: IF '(' expression ')' '{' nested_list '}' ELSE '{' nested_list • '}'
+
+    '}'  shift, and go to state 148
+
+
+State 148
+
+   46 keywords: IF '(' expression ')' '{' nested_list '}' ELSE '{' nested_list '}' •
+
+    $default  reduce using rule 46 (keywords)

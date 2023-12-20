@@ -1,7 +1,7 @@
 procedure Main() return char
 {
-    var a : char;
-    var b : integer;
+    var a : integer;
+    var b : char;
 
     a = 2;
     b = 'd';

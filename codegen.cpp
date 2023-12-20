@@ -325,7 +325,7 @@ class Codegen : public Visitor
 
     void visitWhileLoop(WhileLoop* p)
     {
-        /*fprintf(m_outputfile, "\n### WHILE ###\n\n");
+        fprintf(m_outputfile, "\n### WHILE ###\n\n");
 
         int label = new_label();
 
@@ -339,7 +339,7 @@ class Codegen : public Visitor
         fprintf(m_outputfile, "JUMP%d:\n", label_count);
         
 
-        fprintf(m_outputfile, "\n### END WHILE ###\n\n");*/
+        fprintf(m_outputfile, "\n### END WHILE ###\n\n");
     }
 
     void visitCodeBlock(CodeBlock *p) 
